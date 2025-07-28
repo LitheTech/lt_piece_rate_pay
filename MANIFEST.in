@@ -1,0 +1,18 @@
+include MANIFEST.in
+include requirements.txt
+include *.json
+include *.md
+include *.py
+include *.txt
+recursive-include lt_piece_rate_pay *.css
+recursive-include lt_piece_rate_pay *.csv
+recursive-include lt_piece_rate_pay *.html
+recursive-include lt_piece_rate_pay *.ico
+recursive-include lt_piece_rate_pay *.js
+recursive-include lt_piece_rate_pay *.json
+recursive-include lt_piece_rate_pay *.md
+recursive-include lt_piece_rate_pay *.png
+recursive-include lt_piece_rate_pay *.py
+recursive-include lt_piece_rate_pay *.svg
+recursive-include lt_piece_rate_pay *.txt
+recursive-exclude lt_piece_rate_pay *.pyc
