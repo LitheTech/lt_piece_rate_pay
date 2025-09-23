@@ -1,52 +1,63 @@
 {
  "actions": [],
  "allow_rename": 1,
- "autoname": "ORD-.buyer.-.YYYY.-.#####",
+ "autoname": "Prompt",
  "creation": "2025-07-14 17:01:37.202757",
  "doctype": "DocType",
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
-  "buyer",
   "styleorder",
   "total_quantity",
   "order_details",
-  "company"
+  "company",
+  "sales_contract",
+  "buyer"
  ],
  "fields": [
   {
+   "fetch_from": "sales_contract.buyer",
    "fieldname": "buyer",
-   "fieldtype": "Link",
-   "label": "Buyer",
-   "options": "Customer"
+   "fieldtype": "Data",
+   "label": "Buyer"
   },
   {
    "fieldname": "styleorder",
    "fieldtype": "Data",
+   "hidden": 1,
    "label": "Style/Order"
   },
   {
    "fieldname": "total_quantity",
    "fieldtype": "Int",
+   "hidden": 1,
    "label": "Total Quantity"
   },
   {
    "fieldname": "order_details",
    "fieldtype": "Table",
+   "hidden": 1,
    "label": "Order Details",
    "options": "Order Details"
   },
   {
    "fieldname": "company",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Company",
    "options": "Company",
    "remember_last_selected_value": 1
+  },
+  {
+   "fieldname": "sales_contract",
+   "fieldtype": "Link",
+   "label": "Sales Contract",
+   "options": "Sales Contract"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-07-28 13:03:54.016916",
+ "modified": "2025-09-23 15:13:06.019519",
  "modified_by": "Administrator",
  "module": "Lt Piece Rate Pay",
  "name": "Order List",
