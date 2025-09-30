@@ -9,6 +9,10 @@
  "field_order": [
   "posting_date",
   "order_number",
+  "column_break_3",
+  "sales_contract",
+  "buyer",
+  "section_break_4",
   "po_details"
  ],
  "fields": [
@@ -28,11 +32,31 @@
    "fieldtype": "Link",
    "label": "Order Number",
    "options": "Order List"
+  },
+  {
+   "fieldname": "column_break_3",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_4",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "sales_contract",
+   "fieldtype": "Link",
+   "label": "Sales Contract",
+   "options": "Sales Contract"
+  },
+  {
+   "fetch_from": "sales_contract.buyer",
+   "fieldname": "buyer",
+   "fieldtype": "Data",
+   "label": "Buyer"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-09-23 15:15:18.702174",
+ "modified": "2025-09-24 12:22:47.244751",
  "modified_by": "Administrator",
  "module": "Lt Piece Rate Pay",
  "name": "PO List",

@@ -8,11 +8,19 @@
  "engine": "InnoDB",
  "field_order": [
   "production_date",
-  "employee",
+  "po",
+  "sales_contract",
+  "style_list",
+  "process_type",
+  "completed_quantity",
+  "column_break_4",
+  "company",
   "buyer",
   "order",
-  "daily_production_details",
-  "company"
+  "total_quantity",
+  "bill_quantity",
+  "section_break_8",
+  "daily_production_details"
  ],
  "fields": [
   {
@@ -22,22 +30,16 @@
    "label": "Production Date"
   },
   {
-   "fieldname": "employee",
-   "fieldtype": "Link",
-   "label": "Employee",
-   "options": "Employee"
-  },
-  {
+   "fetch_from": "po.buyer",
    "fieldname": "buyer",
-   "fieldtype": "Link",
-   "label": "Buyer",
-   "options": "Customer"
+   "fieldtype": "Data",
+   "label": "Buyer"
   },
   {
+   "fetch_from": "po.order_number",
    "fieldname": "order",
-   "fieldtype": "Link",
-   "label": "Order",
-   "options": "Order List"
+   "fieldtype": "Data",
+   "label": "Order"
   },
   {
    "fieldname": "daily_production_details",
@@ -51,11 +53,58 @@
    "label": "Company",
    "options": "Company",
    "remember_last_selected_value": 1
+  },
+  {
+   "fieldname": "po",
+   "fieldtype": "Link",
+   "label": " PO",
+   "options": "PO List"
+  },
+  {
+   "fetch_from": "po.sales_contract",
+   "fieldname": "sales_contract",
+   "fieldtype": "Data",
+   "label": "Sales Contract"
+  },
+  {
+   "fieldname": "column_break_4",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_8",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "style_list",
+   "fieldtype": "Link",
+   "label": "Style List",
+   "options": "Style List"
+  },
+  {
+   "fieldname": "total_quantity",
+   "fieldtype": "Int",
+   "label": "Total Quantity"
+  },
+  {
+   "fieldname": "completed_quantity",
+   "fieldtype": "Int",
+   "label": "Completed Quantity"
+  },
+  {
+   "fieldname": "bill_quantity",
+   "fieldtype": "Int",
+   "label": "Bill Quantity"
+  },
+  {
+   "fieldname": "process_type",
+   "fieldtype": "Link",
+   "label": " Process Type",
+   "options": "Process Type"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-07-28 13:03:53.469210",
+ "modified": "2025-09-30 11:59:59.667262",
  "modified_by": "Administrator",
  "module": "Lt Piece Rate Pay",
  "name": "Daily Production",

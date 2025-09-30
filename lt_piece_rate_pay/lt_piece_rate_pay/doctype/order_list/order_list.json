@@ -19,6 +19,7 @@
    "fetch_from": "sales_contract.buyer",
    "fieldname": "buyer",
    "fieldtype": "Data",
+   "hidden": 1,
    "label": "Buyer"
   },
   {
@@ -51,13 +52,14 @@
   {
    "fieldname": "sales_contract",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Sales Contract",
    "options": "Sales Contract"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-09-23 15:13:06.019519",
+ "modified": "2025-09-24 12:28:54.866996",
  "modified_by": "Administrator",
  "module": "Lt Piece Rate Pay",
  "name": "Order List",
