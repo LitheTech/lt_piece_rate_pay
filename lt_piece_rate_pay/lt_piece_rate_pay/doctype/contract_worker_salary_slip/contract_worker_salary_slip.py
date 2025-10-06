@@ -42,13 +42,14 @@ class ContractWorkerSalarySlip(Document):
 					"process_name": row.process_name,
 					"rate": row.rate,
 					"quantity": row.quantity,
+                    "quantitydz": row.quantity/12,
 					"buyer": row.buyer,
 					"production_date": row.production_date,
 				})
     def calculate_total_amount(self):
         total = 0
         for row in self.activities:
-            row.amount = row.rate * row.quantity
+            row.amount = row.rate * row.quantitydz
             total += row.amount
         self.total_amount = total
 
