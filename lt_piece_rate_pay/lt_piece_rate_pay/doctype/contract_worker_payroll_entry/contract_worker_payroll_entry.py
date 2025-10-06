@@ -109,8 +109,12 @@ class ContractWorkerPayrollEntry(Document):
 			# cond += "and t2.salary_structure IN %(sal_struct)s "
 			# cond += "and t2.payroll_payable_account = %(payroll_payable_account)s "
 			# cond += "and %(from_date)s >= t2.from_date"
+		frappe.publish_realtime('msgprint',cond)
 		emp_list = get_emp_list( cond, self.end_date, self.payroll_payable_account)
+		frappe.publish_realtime('msgprint',emp_list)
+		frappe.publish_realtime('msgprint',"test")
 		emp_list = remove_payrolled_employees(emp_list, self.start_date, self.end_date)
+		frappe.publish_realtime('msgprint',emp_list)
 		return emp_list
 
 	def make_filters(self):
