@@ -503,11 +503,11 @@ def get_emp_list( cond, end_date, payroll_payable_account):# added condition to 
 				distinct t1.name as employee, t1.employee_name, t1.department, t1.designation
 			from
 				`tabEmployee` t1
-			where
+			where %s and
 				 t1.status not in ('Inactive','Left')
 		
 		"""
-		,
+		% cond,
 		as_dict=True,
 	)
 
