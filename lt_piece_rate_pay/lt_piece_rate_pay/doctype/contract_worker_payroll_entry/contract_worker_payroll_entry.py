@@ -91,6 +91,7 @@ class ContractWorkerPayrollEntry(Document):
 		Returns list of active employees based on selected criteria
 		and for which salary structure exists
 		"""
+		frappe.publish_realtime("msgprint","test2")
 		self.check_mandatory()
 		filters = self.make_filters()
 		cond = get_filter_condition(filters)
@@ -501,10 +502,9 @@ def get_emp_list( cond, end_date, payroll_payable_account):# added condition to 
 			select
 				distinct t1.name as employee, t1.employee_name, t1.department, t1.designation
 			from
-				`tabEmployee` t1, `tabSalary Structure Assignment` t2
+				`tabEmployee` t1
 			where
 				 t1.status not in ('Inactive','Left')
-				and t1.employment_type in ('Part-time' ,'Contract')
 		
 		"""
 		,

@@ -66,22 +66,22 @@ frappe.ui.form.on('Contract Worker Payroll Entry', {
         }
     },
 
-    get_employee_details: function (frm) {
-        return frappe.call({
-            doc: frm.doc,
-            method: 'fill_employee_details',
-        }).then(r => {
-            if (r.docs && r.docs[0].employees) {
-                frm.employees = r.docs[0].employees;
-                frm.dirty();
-                frm.save();
-                frm.refresh();
-                if (r.docs[0].validate_attendance) {
-                    render_employee_attendance(frm, r.message);
-                }
-            }
-        });
-    },
+    // get_employee_details: function (frm) {
+    //     return frappe.call({
+    //         doc: frm.doc,
+    //         method: 'fill_employee_details',
+    //     }).then(r => {
+    //         if (r.docs && r.docs[0].employees) {
+    //             frm.employees = r.docs[0].employees;
+    //             frm.dirty();
+    //             frm.save();
+    //             frm.refresh();
+    //             if (r.docs[0].validate_attendance) {
+    //                 render_employee_attendance(frm, r.message);
+    //             }
+    //         }
+    //     });
+    // },
 
     create_contract_worker_salary_slips: function (frm) {
         frm.call({
