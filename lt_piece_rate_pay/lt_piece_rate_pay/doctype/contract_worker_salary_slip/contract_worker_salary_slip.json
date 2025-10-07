@@ -9,10 +9,12 @@
   "posting_date",
   "contract_worker_payroll_entry",
   "employee",
+  "employee_name",
   "from_date",
   "to_date",
   "activities",
-  "total_amount"
+  "total_amount",
+  "total_pieces"
  ],
  "fields": [
   {
@@ -58,11 +60,22 @@
    "fieldname": "total_amount",
    "fieldtype": "Currency",
    "label": "Total Amount"
+  },
+  {
+   "fieldname": "total_pieces",
+   "fieldtype": "Float",
+   "label": "Total Pieces"
+  },
+  {
+   "fetch_from": "employee.employee_name",
+   "fieldname": "employee_name",
+   "fieldtype": "Data",
+   "label": "Employee Name"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-07-28 13:03:54.483901",
+ "modified": "2025-10-08 02:14:06.612075",
  "modified_by": "Administrator",
  "module": "Lt Piece Rate Pay",
  "name": "Contract Worker Salary Slip",

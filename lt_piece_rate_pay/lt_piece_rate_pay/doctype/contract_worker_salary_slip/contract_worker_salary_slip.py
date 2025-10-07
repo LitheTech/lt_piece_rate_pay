@@ -47,11 +47,14 @@ class ContractWorkerSalarySlip(Document):
 					"production_date": row.production_date,
 				})
     def calculate_total_amount(self):
-        total = 0
+        total=0
+        all_pieces = 0
         for row in self.activities:
             row.amount = row.rate * row.quantitydz
             total += row.amount
+            all_pieces += row.quantity
         self.total_amount = total
+        self.total_pieces= all_pieces
 
 		
 		
