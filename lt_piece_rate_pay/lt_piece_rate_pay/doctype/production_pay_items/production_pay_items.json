@@ -11,7 +11,10 @@
   "quantity",
   "production_date",
   "buyer",
-  "quantitydz"
+  "quantitydz",
+  "po",
+  "style",
+  "process_type"
  ],
  "fields": [
   {
@@ -44,12 +47,28 @@
    "fieldname": "quantitydz",
    "fieldtype": "Float",
    "label": "Quantity(dz)"
+  },
+  {
+   "fieldname": "po",
+   "fieldtype": "Data",
+   "label": "Po"
+  },
+  {
+   "fieldname": "style",
+   "fieldtype": "Data",
+   "label": "Style"
+  },
+  {
+   "fetch_from": "process_name.parent_process",
+   "fieldname": "process_type",
+   "fieldtype": "Data",
+   "label": "Process Type"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-10-06 17:20:22.750283",
+ "modified": "2025-10-15 15:25:35.595593",
  "modified_by": "Administrator",
  "module": "Lt Piece Rate Pay",
  "name": "Production Pay Items",

@@ -12,12 +12,13 @@
   "sales_contract",
   "style_list",
   "process_type",
-  "completed_quantity",
+  "has_sub_process",
   "column_break_4",
   "company",
   "buyer",
   "order",
   "total_quantity",
+  "completed_quantity",
   "bill_quantity",
   "section_break_8",
   "daily_production_details"
@@ -100,11 +101,18 @@
    "fieldtype": "Link",
    "label": " Process Type",
    "options": "Process Type"
+  },
+  {
+   "default": "0",
+   "fetch_from": "process_type.has_sub_process",
+   "fieldname": "has_sub_process",
+   "fieldtype": "Check",
+   "label": "Has Sub Process"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-09-30 11:59:59.667262",
+ "modified": "2025-10-11 14:05:24.850199",
  "modified_by": "Administrator",
  "module": "Lt Piece Rate Pay",
  "name": "Daily Production",

@@ -27,6 +27,7 @@ from erpnext.accounts.utils import get_fiscal_year
 from erpnext.hr.doctype.employee.employee import get_holiday_list_for_employee
 
 class ContractWorkerPayrollEntry(Document):
+
 	def onload(self):
 		if not self.docstatus == 1 or self.salary_slips_submitted:
 			return
@@ -38,6 +39,13 @@ class ContractWorkerPayrollEntry(Document):
 
 	def validate(self):
 		self.number_of_employees = len(self.employees)
+	
+	def autoname(self):
+		if self.start_date and self.end_date:
+			self.name = f"CPE_{frappe.utils.formatdate(self.start_date, 'ddMMYYYY')}_{frappe.utils.formatdate(self.end_date, 'ddMMYYYY')}"
+		else:
+            # fallback if no dates
+			self.name = frappe.generate_hash("", 8)
 
 	def on_submit(self):
 		self.create_contract_worker_salary_slips()

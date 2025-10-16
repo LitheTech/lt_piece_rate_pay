@@ -164,34 +164,84 @@ function validate_child_quantity(frm, row_name) {
     const bill_qty = Number(frm.doc.bill_quantity) || 0;
     const rows = frm.doc.daily_production_details || [];
 
-    // Find the row being edited
-    const row = rows.find(r => r.name === row_name);
-    if (!row || !row.process_name) return;
-
-    // Get the live input value (so it counts what the user just typed)
-    const live_value = Number($(`.grid-row[data-name="${row_name}"] input[data-fieldname="quantity"]`).val()) || 0;
-
-    // Calculate total for this process including the live value
-    let total_for_process = 0;
-    rows.forEach(r => {
-        if (r.process_name === row.process_name) {
-            if (r.name === row_name) {
-                total_for_process += live_value;
-            } else {
-                total_for_process += Number(r.quantity) || 0;
-            }
-        }
+    // Get all live quantities from the UI, not from frm.doc
+    const live_quantities = {};
+    $(".grid-row[data-name]").each(function() {
+        const row_id = $(this).attr("data-name");
+        const val = Number($(this).find('input[data-fieldname="quantity"]').val()) || 0;
+        live_quantities[row_id] = val;
     });
 
-    if (total_for_process > bill_qty) {
-        const remaining = Math.max(0, bill_qty - (total_for_process - live_value));
-        frappe.model.set_value("Daily Production Detail", row_name, "quantity", remaining);
-        $(`.grid-row[data-name="${row_name}"] input[data-fieldname="quantity"]`).val(remaining);
+    // Find the row being edited
+    const row = rows.find(r => r.name === row_name);
+    if (!row) return;
 
-        frappe.msgprint({
-            title: __("Quantity Exceeded"),
-            indicator: "red",
-            message: `Total for Process <b>${row.process_name}</b> (${total_for_process}) exceeds Bill Quantity (${bill_qty}).`
+    const live_value = live_quantities[row_name] || 0;
+
+    
+    // console.log(live_value)
+    // -------------------------------
+    // CASE 1: has_sub_process = 1
+    // -------------------------------
+    if (frm.doc.has_sub_process) {
+        if (!row.process_name) return;
+
+        let total_for_process = 0;
+        rows.forEach(r => {
+            if (r.process_name === row.process_name) {
+                // if (r.name === row_name) {
+                //     total_for_process += live_value;
+                //     console.log(total_for_process)
+                // } else {
+                    total_for_process += Number(r.quantity) || 0;
+                // }
+            }
         });
+        // console.log(total_for_process,"test")
+
+        if (total_for_process > bill_qty) {
+            const remaining = Math.max(0, bill_qty - (total_for_process - live_value));
+            frappe.model.set_value("Daily Production Detail", row_name, "quantity", remaining);
+
+            // Sync UI instantly
+            $(`.grid-row[data-name="${row_name}"] input[data-fieldname="quantity"]`).val(remaining);
+            frm.refresh_field("daily_production_details");
+
+            frappe.msgprint({
+                title: __("Quantity Exceeded"),
+                indicator: "red",
+                message: `Total for Process <b>${row.process_name}</b> (${total_for_process}) exceeds Bill Quantity (${bill_qty}).`
+            });
+            
+        }
+
+    // -------------------------------
+    // CASE 2: has_sub_process = 0
+    // -------------------------------
+    } else {
+        let total_qty = 0;
+        rows.forEach((r) => {
+            // console.log(r.quantity)
+            // if (r.name === row_name) {
+            //     total_qty += live_value;
+            // } else {
+                total_qty += Number(r.quantity) || 0;
+            // }
+        });
+
+        if (total_qty > bill_qty) {
+            const remaining = Math.max(0, bill_qty - (total_qty - live_value));
+            frappe.model.set_value("Daily Production Detail", row_name, "quantity", remaining);
+
+            // Sync UI instantly
+            $(`.grid-row[data-name="${row_name}"] input[data-fieldname="quantity"]`).val(remaining);
+            frm.refresh_field("daily_production_details");
+
+            frappe.msgprint({
+                title: __("Quantity Exceeded"),
+                indicator: "red",
+                message: `Total Quantity (${total_qty}) exceeds Bill Quantity (${bill_qty}).`
+            });
+        }
     }
 }

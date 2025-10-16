@@ -7,11 +7,14 @@
  "engine": "InnoDB",
  "field_order": [
   "posting_date",
-  "contract_worker_payroll_entry",
   "employee",
   "employee_name",
+  "employee_type",
+  "column_break_4",
+  "contract_worker_payroll_entry",
   "from_date",
   "to_date",
+  "section_break_9",
   "activities",
   "total_amount",
   "total_pieces"
@@ -71,11 +74,25 @@
    "fieldname": "employee_name",
    "fieldtype": "Data",
    "label": "Employee Name"
+  },
+  {
+   "fetch_from": "employee.employment_type",
+   "fieldname": "employee_type",
+   "fieldtype": "Data",
+   "label": "Employee Type"
+  },
+  {
+   "fieldname": "column_break_4",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_9",
+   "fieldtype": "Section Break"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-10-08 02:14:06.612075",
+ "modified": "2025-10-15 15:15:08.178390",
  "modified_by": "Administrator",
  "module": "Lt Piece Rate Pay",
  "name": "Contract Worker Salary Slip",
