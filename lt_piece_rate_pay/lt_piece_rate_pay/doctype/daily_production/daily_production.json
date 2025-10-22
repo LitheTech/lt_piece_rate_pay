@@ -11,6 +11,7 @@
   "po",
   "sales_contract",
   "style_list",
+  "color",
   "process_type",
   "has_sub_process",
   "column_break_4",
@@ -49,17 +50,18 @@
    "options": "Daily Production Details"
   },
   {
+   "fetch_from": "po.company",
    "fieldname": "company",
-   "fieldtype": "Link",
+   "fieldtype": "Data",
    "label": "Company",
-   "options": "Company",
    "remember_last_selected_value": 1
   },
   {
    "fieldname": "po",
    "fieldtype": "Link",
    "label": " PO",
-   "options": "PO List"
+   "options": "PO List",
+   "remember_last_selected_value": 1
   },
   {
    "fetch_from": "po.sales_contract",
@@ -107,12 +109,18 @@
    "fetch_from": "process_type.has_sub_process",
    "fieldname": "has_sub_process",
    "fieldtype": "Check",
-   "label": "Has Sub Process"
+   "label": "Has Sub Process",
+   "read_only": 1
+  },
+  {
+   "fieldname": "color",
+   "fieldtype": "Select",
+   "label": "Color"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-10-11 14:05:24.850199",
+ "modified": "2025-10-22 15:55:32.116891",
  "modified_by": "Administrator",
  "module": "Lt Piece Rate Pay",
  "name": "Daily Production",

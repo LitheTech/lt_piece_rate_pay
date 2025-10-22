@@ -19,7 +19,7 @@ def get_styles_for_po(po=None):
 
     # Replace 'PO Details' with your actual child table name
     rows = frappe.db.sql("""
-        SELECT DISTINCT pd.style,pd.quantity
+        SELECT DISTINCT pd.style,pd.quantity,pd.color
         FROM `tabPO Details` pd
         WHERE pd.parent = %s
         ORDER BY pd.style ASC

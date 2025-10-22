@@ -42,20 +42,21 @@ class DailyProduction(Document):
 	
 
 @frappe.whitelist()
-def get_completed_quantity(po, style,process_type=None):
+def get_completed_quantity(po, style,process_type=None,color=None):
     """
     Fetch total done quantity for a given PO + Style
     from previously saved Daily Production records.
     """
     if not po or not style:
         return 0
+        
 
     # Sum qty from Daily Production where po + style match
     done_qty = frappe.db.sql("""
         SELECT COALESCE(SUM(bill_quantity), 0) as total_done
         FROM `tabDaily Production`
-        WHERE po = %s AND style_list = %s AND process_type=%s
-    """,values=[po,style,process_type], as_dict=True)
+        WHERE po = %s AND style_list = %s AND color=%s and process_type=%s
+    """,values=[po,style,color,process_type], as_dict=True)
     # frappe.publish_realtime('msgprint',done_qty)
 
     return done_qty[0].total_done if done_qty else 0

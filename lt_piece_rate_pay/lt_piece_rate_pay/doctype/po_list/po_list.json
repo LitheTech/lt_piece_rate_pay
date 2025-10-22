@@ -8,12 +8,15 @@
  "engine": "InnoDB",
  "field_order": [
   "posting_date",
+  "company",
   "order_number",
   "column_break_3",
   "sales_contract",
   "buyer",
   "section_break_4",
-  "po_details"
+  "po_details",
+  "section_break_8",
+  "total_quantity"
  ],
  "fields": [
   {
@@ -52,11 +55,26 @@
    "fieldname": "buyer",
    "fieldtype": "Data",
    "label": "Buyer"
+  },
+  {
+   "fieldname": "section_break_8",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "total_quantity",
+   "fieldtype": "Int",
+   "label": "Total Quantity"
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "options": "Company"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-09-24 12:22:47.244751",
+ "modified": "2025-10-21 16:26:13.281417",
  "modified_by": "Administrator",
  "module": "Lt Piece Rate Pay",
  "name": "PO List",

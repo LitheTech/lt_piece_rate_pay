@@ -1,104 +1,124 @@
 frappe.ui.form.on("Daily Production", {
-    po: function(frm) {
+    po: function (frm) {
         if (frm.doc.po) {
             frappe.call({
                 method: "lt_piece_rate_pay.lt_piece_rate_pay.doctype.po_details.po_details.get_styles_for_po",
                 args: { po: frm.doc.po },
-                callback: function(r) {
+                callback: function (r) {
                     if (r.message && r.message.length > 0) {
-                        // ✅ store both style + quantity
-                        frm.allowed_styles_data = r.message;              // [{style, quantity}, ...]
-                        frm.allowed_styles = r.message.map(d => d.style); // ["style1", "style2"]
+                        frm.allowed_styles_data = r.message; // [{style, color, quantity}, ...]
+                        frm.allowed_styles = [...new Set(r.message.map(d => d.style))];
 
-                        // Apply Link field filter
-                        frm.set_query("style_list", function() {
+                        frm.set_query("style_list", function () {
                             return { filters: { name: ["in", frm.allowed_styles] } };
                         });
-
-                        // Reset fields
-                        frm.set_value("style_list", "");
-                        frm.set_value("total_quantity", 0);
-                        frm.set_value("completed_quantity", 0);
                     } else {
                         frm.allowed_styles_data = [];
                         frm.allowed_styles = [];
-                        frm.set_query("style_list", function() {
+                        frm.set_query("style_list", function () {
                             return { filters: { name: ["in", []] } };
                         });
-                        frm.set_value("style_list", "");
-                        frm.set_value("total_quantity", 0);
-                        frm.set_value("completed_quantity", 0);
                     }
+
+                    // reset
+                    frm.set_value("style_list", "");
+                    frm.set_value("color", "");
+                    frm.set_value("total_quantity", 0);
+                    frm.set_value("completed_quantity", 0);
                 }
             });
         } else {
             frm.allowed_styles_data = [];
             frm.allowed_styles = [];
-            frm.set_query("style_list", function() {
+            frm.set_query("style_list", function () {
                 return { filters: { name: ["in", []] } };
             });
             frm.set_value("style_list", "");
+            frm.set_value("color", "");
             frm.set_value("total_quantity", 0);
             frm.set_value("completed_quantity", 0);
         }
     },
 
-    style_list: function(frm) {
+    // 🟦 Style selected → populate color options
+    style_list: function (frm) {
         if (frm.doc.style_list && frm.allowed_styles_data) {
-            // ✅ get total_quantity from allowed_styles_data
-            let selected = frm.allowed_styles_data.find(d => d.style === frm.doc.style_list);
+            let colors = frm.allowed_styles_data
+                .filter(d => d.style === frm.doc.style_list)
+                .map(d => d.color)
+                .filter(c => c); // remove null/undefined
+
+            // ✅ color is a Data field → set dropdown dynamically
+            frm.fields_dict.color.df.options = ["", ...colors];
+            frm.refresh_field("color");
+
+            frm.set_value("color", "");
+            frm.set_value("total_quantity", 0);
+            frm.set_value("completed_quantity", 0);
+        }
+    },
+
+    // 🟩 Color selected → fetch quantity
+    color: function (frm) {
+        if (frm.doc.color && frm.doc.style_list && frm.doc.po) {
+            let selected = frm.allowed_styles_data.find(
+                d => d.style === frm.doc.style_list && d.color === frm.doc.color
+            );
+
             if (selected) {
                 frm.set_value("total_quantity", selected.quantity || 0);
 
-                // ✅ fetch completed quantity from Daily Production
                 frappe.call({
                     method: "lt_piece_rate_pay.lt_piece_rate_pay.doctype.daily_production.daily_production.get_completed_quantity",
                     args: {
                         po: frm.doc.po,
                         style: frm.doc.style_list,
+                        color: frm.doc.color,
+                        process_type: frm.doc.process_type || null
                     },
-                    callback: function(r) {
+                    callback: function (r) {
                         frm.set_value("completed_quantity", r.message || 0);
-                        validate_totals(frm);  // 🔥 run validation immediately
                     }
                 });
-
             } else {
                 frm.set_value("total_quantity", 0);
                 frm.set_value("completed_quantity", 0);
             }
+        }
+    },
+
+process_type: function(frm) {
+    if (frm.doc.process_type && frm.doc.style_list && frm.allowed_styles_data && frm.doc.color) {
+        // ✅ match both style and color
+        let selected = frm.allowed_styles_data.find(
+            d => d.style === frm.doc.style_list && d.color === frm.doc.color
+        );
+
+        if (selected) {
+            frm.set_value("total_quantity", selected.quantity || 0);
+
+            frappe.call({
+                method: "lt_piece_rate_pay.lt_piece_rate_pay.doctype.daily_production.daily_production.get_completed_quantity",
+                args: {
+                    po: frm.doc.po,
+                    style: frm.doc.style_list,
+                    color: frm.doc.color,
+                    process_type: frm.doc.process_type || null
+                },
+                callback: function(r) {
+                    frm.set_value("completed_quantity", r.message || 0);
+                    validate_totals(frm);
+                }
+            });
         } else {
             frm.set_value("total_quantity", 0);
             frm.set_value("completed_quantity", 0);
         }
-    },
+    } else {
+        frm.set_value("completed_quantity", 0);
+    }
+},
 
-    process_type: function(frm) {
-        if (frm.doc.process_type && frm.doc.style_list && frm.allowed_styles_data) {
-            let selected = frm.allowed_styles_data.find(d => d.style === frm.doc.style_list);
-            if (selected) {
-                frm.set_value("total_quantity", selected.quantity || 0);
-
-                frappe.call({
-                    method: "lt_piece_rate_pay.lt_piece_rate_pay.doctype.daily_production.daily_production.get_completed_quantity",
-                    args: {
-                        po: frm.doc.po,
-                        style: frm.doc.style_list,
-                        process_type: frm.doc.process_type || null
-                    },
-                    callback: function(r) {
-                        frm.set_value("completed_quantity", r.message || 0);
-                        validate_totals(frm);  // 🔥 run validation immediately
-                    }
-                });
-
-            } else {
-                frm.set_value("completed_quantity", 0);
-            }
-        } else {
-            frm.set_value("completed_quantity", 0);
-        }
-    },
 
     bill_quantity: function(frm) {
         validate_totals(frm);
