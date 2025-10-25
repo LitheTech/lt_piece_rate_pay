@@ -14,6 +14,7 @@
   "color",
   "process_type",
   "has_sub_process",
+  "floor",
   "column_break_4",
   "company",
   "buyer",
@@ -21,6 +22,8 @@
   "total_quantity",
   "completed_quantity",
   "bill_quantity",
+  "is_revised",
+  "facility_or_line",
   "section_break_8",
   "daily_production_details"
  ],
@@ -116,11 +119,29 @@
    "fieldname": "color",
    "fieldtype": "Select",
    "label": "Color"
+  },
+  {
+   "fieldname": "floor",
+   "fieldtype": "Link",
+   "label": "Floor",
+   "options": "Floor"
+  },
+  {
+   "fieldname": "facility_or_line",
+   "fieldtype": "Link",
+   "label": " Facility or Line",
+   "options": "Facility or Line"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_revised",
+   "fieldtype": "Check",
+   "label": "Is Revised"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-10-22 15:55:32.116891",
+ "modified": "2025-10-25 10:52:24.965659",
  "modified_by": "Administrator",
  "module": "Lt Piece Rate Pay",
  "name": "Daily Production",

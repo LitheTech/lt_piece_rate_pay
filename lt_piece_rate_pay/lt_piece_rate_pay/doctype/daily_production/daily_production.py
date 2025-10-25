@@ -13,7 +13,7 @@ class DailyProduction(Document):
         bill_qty = self.bill_quantity or 0
 
         # ✅ Check validation
-        if (completed_qty + bill_qty) > total_qty:
+        if (completed_qty + bill_qty) > total_qty and self.is_revised==0:
             frappe.throw(
                 _("Total Quantity cannot be less than the sum of Completed and Bill Quantity. "
                   "Total: {0}, Completed + Bill: {1}").format(total_qty, completed_qty + bill_qty),
@@ -55,7 +55,7 @@ def get_completed_quantity(po, style,process_type=None,color=None):
     done_qty = frappe.db.sql("""
         SELECT COALESCE(SUM(bill_quantity), 0) as total_done
         FROM `tabDaily Production`
-        WHERE po = %s AND style_list = %s AND color=%s and process_type=%s
+        WHERE po = %s AND style_list = %s AND color=%s and process_type=%s and is_revised=0
     """,values=[po,style,color,process_type], as_dict=True)
     # frappe.publish_realtime('msgprint',done_qty)
 

@@ -1,4 +1,21 @@
 frappe.ui.form.on("Daily Production", {
+
+    floor: function(frm) {
+        if (frm.doc.floor) {
+            frm.set_query("facility_or_line", function() {
+                return {
+                    filters: {
+                        floor: frm.doc.floor
+                    }
+                };
+            });
+        } else {
+            frm.set_query("facility_or_line", function() {
+                return {}; // Show all if no floor selected
+            });
+        }
+    },
+
     po: function (frm) {
         if (frm.doc.po) {
             frappe.call({
@@ -152,7 +169,9 @@ function validate_totals(frm) {
     let completed_qty = frm.doc.completed_quantity || 0;
     let bill_qty = frm.doc.bill_quantity || 0;
 
-    if ((completed_qty + bill_qty) > total_qty) {
+    console.log(frm.doc.is_revised)
+
+    if (((completed_qty + bill_qty) > total_qty) && frm.doc.is_revised==0){
         frappe.msgprint({
             title: __("Quantity Mismatch"),
             indicator: "red",
