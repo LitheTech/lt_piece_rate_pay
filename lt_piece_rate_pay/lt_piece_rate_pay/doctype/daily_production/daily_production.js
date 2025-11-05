@@ -104,37 +104,37 @@ frappe.ui.form.on("Daily Production", {
         }
     },
 
-process_type: function(frm) {
-    if (frm.doc.process_type && frm.doc.style_list && frm.allowed_styles_data && frm.doc.color) {
-        // ✅ match both style and color
-        let selected = frm.allowed_styles_data.find(
-            d => d.style === frm.doc.style_list && d.color === frm.doc.color
-        );
+    process_type: function(frm) {
+        if (frm.doc.process_type && frm.doc.style_list && frm.allowed_styles_data && frm.doc.color) {
+            // ✅ match both style and color
+            let selected = frm.allowed_styles_data.find(
+                d => d.style === frm.doc.style_list && d.color === frm.doc.color
+            );
 
-        if (selected) {
-            frm.set_value("total_quantity", selected.quantity || 0);
+            if (selected) {
+                frm.set_value("total_quantity", selected.quantity || 0);
 
-            frappe.call({
-                method: "lt_piece_rate_pay.lt_piece_rate_pay.doctype.daily_production.daily_production.get_completed_quantity",
-                args: {
-                    po: frm.doc.po,
-                    style: frm.doc.style_list,
-                    color: frm.doc.color,
-                    process_type: frm.doc.process_type || null
-                },
-                callback: function(r) {
-                    frm.set_value("completed_quantity", r.message || 0);
-                    validate_totals(frm);
-                }
-            });
+                frappe.call({
+                    method: "lt_piece_rate_pay.lt_piece_rate_pay.doctype.daily_production.daily_production.get_completed_quantity",
+                    args: {
+                        po: frm.doc.po,
+                        style: frm.doc.style_list,
+                        color: frm.doc.color,
+                        process_type: frm.doc.process_type || null
+                    },
+                    callback: function(r) {
+                        frm.set_value("completed_quantity", r.message || 0);
+                        validate_totals(frm);
+                    }
+                });
+            } else {
+                frm.set_value("total_quantity", 0);
+                frm.set_value("completed_quantity", 0);
+            }
         } else {
-            frm.set_value("total_quantity", 0);
             frm.set_value("completed_quantity", 0);
         }
-    } else {
-        frm.set_value("completed_quantity", 0);
-    }
-},
+    },
 
 
     bill_quantity: function(frm) {
@@ -198,6 +198,12 @@ frappe.ui.form.on("Daily Production", {
         }
     }
 });
+
+// function calculate_amount(frm, cdt, cdn) {
+//     let row = locals[cdt][cdn];
+//     row.amount = (row.rate || 0) * (row.quantity || 0);
+//     frm.refresh_field('daily_production_details'); // replace with your child table fieldname
+// }
 
 function validate_child_quantity(frm, row_name) {
     const bill_qty = Number(frm.doc.bill_quantity) || 0;

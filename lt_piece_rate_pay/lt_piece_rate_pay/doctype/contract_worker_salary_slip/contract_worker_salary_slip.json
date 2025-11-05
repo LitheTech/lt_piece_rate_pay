@@ -1,6 +1,7 @@
 {
  "actions": [],
  "allow_rename": 1,
+ "autoname": "format:CWSS_{employee}_{from_date}",
  "creation": "2025-06-15 14:58:05.416188",
  "doctype": "DocType",
  "editable_grid": 1,
@@ -92,7 +93,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-10-15 15:15:08.178390",
+ "modified": "2025-10-25 15:17:03.408626",
  "modified_by": "Administrator",
  "module": "Lt Piece Rate Pay",
  "name": "Contract Worker Salary Slip",

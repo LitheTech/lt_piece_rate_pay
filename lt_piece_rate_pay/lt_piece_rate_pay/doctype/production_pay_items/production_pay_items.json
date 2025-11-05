@@ -14,7 +14,9 @@
   "quantitydz",
   "po",
   "style",
-  "process_type"
+  "process_type",
+  "floor",
+  "line"
  ],
  "fields": [
   {
@@ -63,12 +65,22 @@
    "fieldname": "process_type",
    "fieldtype": "Data",
    "label": "Process Type"
+  },
+  {
+   "fieldname": "floor",
+   "fieldtype": "Data",
+   "label": "Floor"
+  },
+  {
+   "fieldname": "line",
+   "fieldtype": "Data",
+   "label": "Line"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-10-15 15:25:35.595593",
+ "modified": "2025-10-29 12:00:57.086909",
  "modified_by": "Administrator",
  "module": "Lt Piece Rate Pay",
  "name": "Production Pay Items",

@@ -6,6 +6,13 @@ from frappe import _
 from frappe.model.document import Document
 
 class DailyProduction(Document):
+    def total_rows_amount(self):
+        tamount=0
+        for row in self.daily_production_details:
+            row.amount = ((row.quantity or 0) * (row.rate or 0))/12.0
+            tamount=tamount+row.amount
+        self.total_amount=tamount
+
     def validate(self):
         # ✅ Ensure fields are numbers (avoid NoneType issues)
         total_qty = self.total_quantity or 0
@@ -20,6 +27,7 @@ class DailyProduction(Document):
                 title=_("Quantity Mismatch")
             )
         self.validate_process_quantities()
+        self.total_rows_amount()
 
     def validate_process_quantities(self):
         # Parent Bill Quantity

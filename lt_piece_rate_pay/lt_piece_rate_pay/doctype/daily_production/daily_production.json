@@ -25,7 +25,9 @@
   "is_revised",
   "facility_or_line",
   "section_break_8",
-  "daily_production_details"
+  "daily_production_details",
+  "section_break_20",
+  "total_amount"
  ],
  "fields": [
   {
@@ -137,11 +139,20 @@
    "fieldname": "is_revised",
    "fieldtype": "Check",
    "label": "Is Revised"
+  },
+  {
+   "fieldname": "section_break_20",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "total_amount",
+   "fieldtype": "Float",
+   "label": "Total Amount"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-10-25 10:52:24.965659",
+ "modified": "2025-10-29 17:41:20.333884",
  "modified_by": "Administrator",
  "module": "Lt Piece Rate Pay",
  "name": "Daily Production",
