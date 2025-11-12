@@ -30,7 +30,7 @@ class ContractWorkerSalarySlip(Document):
                 dp.process_type,
                 dp.style_list,
                 dp.floor,
-                dp.line
+                dp.facility_or_line
             FROM
                 `tabDaily Production Details` dpd
             JOIN
@@ -39,7 +39,7 @@ class ContractWorkerSalarySlip(Document):
                 dpd.employee = %s
                 AND dp.production_date BETWEEN %s AND %s
             GROUP BY
-                dpd.process_name, dp.po,dp.style_list,dp.line
+                dpd.process_name, dp.po,dp.style_list,dp.facility_or_line
         """, (self.employee, self.from_date, self.to_date), as_dict=True)
 
         for row in data:
@@ -55,7 +55,7 @@ class ContractWorkerSalarySlip(Document):
                     "process_type": row.process_type,
                     "style":row.style_list,
                     "floor": row.floor,
-                    "line": row.line
+                    "line": row.facility_or_line
 				})
     def calculate_total_amount(self):
         total=0
