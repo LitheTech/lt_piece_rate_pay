@@ -83,16 +83,44 @@ class ContractWorkerPayrollEntry(Document):
 			)
 
 	def on_cancel(self):
-		frappe.delete_doc(
-			"Salary Slip",
-			frappe.db.sql_list(
-				"""select name from `tabSalary Slip`
-			where payroll_entry=%s """,
-				(self.name),
-			),
+		salary_slips = frappe.db.sql_list(
+			"""
+			SELECT name FROM `tabContract Worker Salary Slip`
+			WHERE contract_worker_payroll_entry = %s
+			""",
+			(self.name,),
 		)
+
+		total = len(salary_slips)
+
+		for count, slip in enumerate(salary_slips, start=1):
+			frappe.delete_doc(
+				"Contract Worker Salary Slip",
+				slip,
+				force=1
+			)
+
+			# Show progress bar
+			frappe.publish_progress(
+				count * 100 / total if total else 100,
+				title=_("Deleting Salary Slips..."),
+			)
+
 		self.db_set("salary_slips_created", 0)
 		self.db_set("salary_slips_submitted", 0)
+
+	@frappe.whitelist()
+	def reprocess_salary_slips(self):# added for reprocess the slips
+		self.check_permission("write")
+		ss_list = self.get_sal_slip_list(ss_status=0)
+
+		if len(ss_list) > 30:
+			frappe.enqueue(
+				reprocess_salary_slips_for_employees, timeout=1600, payroll_entry=self, salary_slips=ss_list
+			)
+		else:
+			reprocess_salary_slips_for_employees(self, ss_list, publish_progress=False)
+
 
 	def get_emp_list(self):
 		"""
@@ -204,11 +232,10 @@ class ContractWorkerPayrollEntry(Document):
 
 		ss_list = frappe.db.sql(
 			"""
-			select t1.name, t1.salary_structure, t1.payroll_cost_center from `tabSalary Slip` t1
-			where t1.docstatus = %s and t1.start_date >= %s and t1.end_date <= %s and t1.payroll_entry = %s
-			and (t1.journal_entry is null or t1.journal_entry = "") and ifnull(salary_slip_based_on_timesheet,0) = %s
+			select t1.name from `tabContract Worker Salary Slip` t1
+			where t1.docstatus = %s and t1.from_date >= %s and t1.to_date <= %s and t1.contract_worker_payroll_entry = %s
 		""",
-			(ss_status, self.start_date, self.end_date, self.name, self.salary_slip_based_on_timesheet),
+			(ss_status, self.start_date, self.end_date, self.name),
 			as_dict=as_dict,
 		)
 		return ss_list
@@ -824,3 +851,19 @@ def employee_query(doctype, txt, searchfield, start, page_len, filters):
 			"include_employees": include_employees,
 		},
 	)
+
+def reprocess_salary_slips_for_employees(payroll_entry, salary_slips, publish_progress=True): #reprocesses the slips where net_pay>0
+	submitted_ss = []
+	not_submitted_ss = []
+	frappe.flags.via_payroll_entry = True
+	
+	count = 0
+	for ss in salary_slips:
+		ss_obj = frappe.get_doc("Contract Worker Salary Slip", ss[0])
+		# if ss_obj.net_pay >= 0:
+		ss_obj.save()
+
+		count += 1
+		if publish_progress:
+			frappe.publish_progress(count * 100 / len(salary_slips), title=_("Reprocessing Salary Slips..."))
+	
