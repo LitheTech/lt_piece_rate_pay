@@ -1,0 +1,48 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-04-04 16:13:35.687731",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "color",
+  "color_quantity",
+  "done_quantity",
+  "ongoing_quantity"
+ ],
+ "fields": [
+  {
+   "fieldname": "color",
+   "fieldtype": "Select",
+   "label": "Color"
+  },
+  {
+   "fieldname": "color_quantity",
+   "fieldtype": "Int",
+   "label": "Color Quantity"
+  },
+  {
+   "fieldname": "done_quantity",
+   "fieldtype": "Int",
+   "label": "Done Quantity"
+  },
+  {
+   "default": "0",
+   "fieldname": "ongoing_quantity",
+   "fieldtype": "Int",
+   "label": "Ongoing Quantity"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2026-04-07 14:40:29.871522",
+ "modified_by": "Administrator",
+ "module": "Lt Piece Rate Pay",
+ "name": "Daily Production Colors",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC"
+}

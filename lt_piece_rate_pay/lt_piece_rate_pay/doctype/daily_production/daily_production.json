@@ -14,17 +14,22 @@
   "color",
   "process_type",
   "has_sub_process",
-  "floor",
   "column_break_4",
   "company",
   "buyer",
   "order",
-  "total_quantity",
-  "completed_quantity",
-  "bill_quantity",
   "is_revised",
+  "floor",
   "facility_or_line",
+  "section_break_22",
+  "daily_production_colors",
   "section_break_8",
+  "total_quantity",
+  "column_break_19",
+  "completed_quantity",
+  "column_break_21",
+  "bill_quantity",
+  "section_break_23",
   "daily_production_details",
   "section_break_20",
   "total_amount"
@@ -49,6 +54,7 @@
    "label": "Order"
   },
   {
+   "depends_on": "eval:!doc.__islocal",
    "fieldname": "daily_production_details",
    "fieldtype": "Table",
    "label": "Daily Production Details",
@@ -120,6 +126,7 @@
   {
    "fieldname": "color",
    "fieldtype": "Select",
+   "hidden": 1,
    "label": "Color"
   },
   {
@@ -148,11 +155,33 @@
    "fieldname": "total_amount",
    "fieldtype": "Float",
    "label": "Total Amount"
+  },
+  {
+   "fieldname": "section_break_22",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "daily_production_colors",
+   "fieldtype": "Table",
+   "label": "Daily Production Colors",
+   "options": "Daily Production Colors"
+  },
+  {
+   "fieldname": "column_break_19",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_21",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_23",
+   "fieldtype": "Section Break"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-10-29 17:41:20.333884",
+ "modified": "2026-04-09 14:20:37.222442",
  "modified_by": "Administrator",
  "module": "Lt Piece Rate Pay",
  "name": "Daily Production",
