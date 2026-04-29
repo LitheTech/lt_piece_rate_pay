@@ -10,8 +10,6 @@
   "production_date",
   "po",
   "sales_contract",
-  "style_list",
-  "color",
   "process_type",
   "has_sub_process",
   "column_break_4",
@@ -89,12 +87,6 @@
    "fieldtype": "Section Break"
   },
   {
-   "fieldname": "style_list",
-   "fieldtype": "Link",
-   "label": "Style List",
-   "options": "Style List"
-  },
-  {
    "fieldname": "total_quantity",
    "fieldtype": "Int",
    "label": "Total Quantity"
@@ -122,12 +114,6 @@
    "fieldtype": "Check",
    "label": "Has Sub Process",
    "read_only": 1
-  },
-  {
-   "fieldname": "color",
-   "fieldtype": "Select",
-   "hidden": 1,
-   "label": "Color"
   },
   {
    "fieldname": "floor",
@@ -181,7 +167,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-04-09 14:20:37.222442",
+ "modified": "2026-04-27 16:50:02.215943",
  "modified_by": "Administrator",
  "module": "Lt Piece Rate Pay",
  "name": "Daily Production",

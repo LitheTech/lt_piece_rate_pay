@@ -30,12 +30,16 @@
   {
    "fieldname": "contract_worker_payroll_entry",
    "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Contract Worker Payroll Entry",
    "options": "Contract Worker Payroll Entry"
   },
   {
    "fieldname": "employee",
    "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Employee",
    "options": "Employee",
    "reqd": 1
@@ -93,7 +97,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-10-25 15:17:03.408626",
+ "modified": "2026-04-28 16:00:48.975795",
  "modified_by": "Administrator",
  "module": "Lt Piece Rate Pay",
  "name": "Contract Worker Salary Slip",
