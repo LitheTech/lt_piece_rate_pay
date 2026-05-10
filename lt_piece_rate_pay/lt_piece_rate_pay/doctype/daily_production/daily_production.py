@@ -59,7 +59,7 @@ class DailyProduction(Document):
             done_qty = row.done_quantity or 0
             ongoing_qty = row.ongoing_quantity or 0
 
-            if (done_qty + ongoing_qty) > color_qty:
+            if (done_qty + ongoing_qty) > color_qty and self.is_revised==0:
                 frappe.throw(
                     _(
                         "For Color <b>{0}</b>: Done + Ongoing ({1}) "
@@ -99,7 +99,8 @@ def get_done_quantity(po, color, process_type):
         "Daily Production",
         filters={
             "po": po,
-            "process_type": process_type
+            "process_type": process_type,
+            "is_revised": 0
         },
         pluck="name"
     )

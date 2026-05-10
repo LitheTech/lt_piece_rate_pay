@@ -12,7 +12,8 @@
   "employee",
   "department",
   "amount",
-  "employee_name"
+  "employee_name",
+  "employee_type"
  ],
  "fields": [
   {
@@ -58,12 +59,18 @@
    "fieldname": "employee_name",
    "fieldtype": "Data",
    "label": "Employee Name"
+  },
+  {
+   "fetch_from": "employee.employment_type",
+   "fieldname": "employee_type",
+   "fieldtype": "Data",
+   "label": "Employee Type"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-11-08 15:09:09.686106",
+ "modified": "2026-05-04 12:49:03.025651",
  "modified_by": "Administrator",
  "module": "Lt Piece Rate Pay",
  "name": "Daily Production Details",
