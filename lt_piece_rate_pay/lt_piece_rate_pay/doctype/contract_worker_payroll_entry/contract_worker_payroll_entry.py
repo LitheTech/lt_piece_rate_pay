@@ -129,8 +129,9 @@ class ContractWorkerPayrollEntry(Document):
 		"""
 		self.check_mandatory()
 		filters = self.make_filters()
-		cond = get_filter_condition(filters)
-		cond += get_joining_relieving_condition(self.start_date, self.end_date)
+		# cond = get_filter_condition(filters)# for several company i want all of the employee
+		cond=" and 1=1 "
+		# cond += get_joining_relieving_condition(self.start_date, self.end_date)# they dont want joining date as issue
 
 		condition = ""
 		if self.payroll_frequency:
@@ -219,7 +220,7 @@ class ContractWorkerPayrollEntry(Document):
 				}
 			)
 			if len(employees) > 30:
-				frappe.enqueue(create_worker_salary_slips_for_employees, timeout=600, employees=employees, args=args)
+				frappe.enqueue(create_worker_salary_slips_for_employees, timeout=800, employees=employees, args=args)
 			else:
 				create_worker_salary_slips_for_employees(employees, args, publish_progress=False)
 				# since this method is called via frm.call this doc needs to be updated manually

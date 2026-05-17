@@ -13,6 +13,7 @@
   "column_break_3",
   "sales_contract",
   "buyer",
+  "filelot",
   "section_break_4",
   "po_details",
   "section_break_8",
@@ -21,7 +22,7 @@
  "fields": [
   {
    "fieldname": "posting_date",
-   "fieldtype": "Data",
+   "fieldtype": "Date",
    "label": "Posting Date"
   },
   {
@@ -70,11 +71,16 @@
    "fieldtype": "Link",
    "label": "Company",
    "options": "Company"
+  },
+  {
+   "fieldname": "filelot",
+   "fieldtype": "Data",
+   "label": "File/Lot"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-10-21 16:26:13.281417",
+ "modified": "2026-05-16 13:20:44.591975",
  "modified_by": "Administrator",
  "module": "Lt Piece Rate Pay",
  "name": "PO List",

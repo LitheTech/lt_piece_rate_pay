@@ -64,6 +64,7 @@ class ContractWorkerSalarySlip(Document):
             all_pieces += row.quantity
         self.total_amount = total
         self.total_pieces= all_pieces
+        self.tax = 10
         if self.total_amount<1000:
             self.tax=0
 

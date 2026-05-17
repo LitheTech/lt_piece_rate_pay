@@ -1,6 +1,3 @@
-# Copyright (c) 2025, Lithe-Tech LTD and contributors
-# For license information, please see license.txt
-
 import frappe
 from frappe import _
 from frappe.model.document import Document
@@ -8,37 +5,23 @@ from frappe.model.document import Document
 
 class DailyProduction(Document):
 
-    def total_rows_amount(self):
-        tamount=0
-        for row in self.daily_production_details:
-            row.amount = ((row.quantity or 0) * (row.rate or 0))/12.0
-            tamount=tamount+row.amount
-        self.total_amount=tamount
-
+    # =========================================================
+    # MAIN VALIDATE
+    # =========================================================
     def validate(self):
 
-        # ✅ totals from child
+        self.sync_latest_done_quantity()
+
         self.set_totals_from_colors()
-
-        # ✅ NEW VALIDATION (added)
         self.validate_color_quantities()
-
-        total_qty = self.total_quantity or 0
-        completed_qty = self.completed_quantity or 0
-        bill_qty = self.bill_quantity or 0
-
-        if (completed_qty + bill_qty) > total_qty and self.is_revised==0:
-            frappe.throw(
-                _("Total Quantity cannot be less than the sum of Completed and Bill Quantity. "
-                  "Total: {0}, Completed + Bill: {1}").format(total_qty, completed_qty + bill_qty),
-                title=_("Quantity Mismatch")
-            )
-
         self.validate_process_quantities()
         self.total_rows_amount()
 
-    # 🔹 already added earlier
+    # =========================================================
+    # TOTAL CALCULATION
+    # =========================================================
     def set_totals_from_colors(self):
+
         total_qty = 0
         completed_qty = 0
         bill_qty = 0
@@ -52,78 +35,153 @@ class DailyProduction(Document):
         self.completed_quantity = completed_qty
         self.bill_quantity = bill_qty
 
-    # 🔥 NEW VALIDATION FUNCTION
+    # =========================================================
+    # COLOR VALIDATION (row-level only)
+    # =========================================================
     def validate_color_quantities(self):
-        for row in self.daily_production_colors:
-            color_qty = row.color_quantity or 0
-            done_qty = row.done_quantity or 0
-            ongoing_qty = row.ongoing_quantity or 0
 
-            if (done_qty + ongoing_qty) > color_qty and self.is_revised==0:
+        # for row in self.daily_production_colors:
+
+        #     if (row.done_quantity or 0) + (row.ongoing_quantity or 0) > (row.color_quantity or 0):
+
+        #         frappe.throw(
+        #             _(
+        #                 "For Color <b>{0}</b>: Done + Ongoing exceeds allowed quantity"
+        #             ).format(row.color),
+        #             title=_("Quantity Exceeded")
+        #         )
+        #         def validate_color_quantities(self):
+
+        for row in self.daily_production_colors:
+
+            allowed_qty = row.color_quantity or 0
+            done = row.done_quantity or 0
+            ongoing = row.ongoing_quantity or 0
+            current_entry = done + ongoing
+
+            if current_entry > allowed_qty:
+
+                remaining = allowed_qty - (done or 0)
+
                 frappe.throw(
                     _(
-                        "For Color <b>{0}</b>: Done + Ongoing ({1}) "
-                        "cannot exceed Color Quantity ({2})"
-                    ).format(row.color, done_qty + ongoing_qty, color_qty),
-                    title=_("Color Quantity Exceeded")
+                        "❌ Quantity Exceeded for Color <b>{0}</b><br><br>"
+                        "Allowed Quantity: <b>{1}</b><br>"
+                        "Already Used (Max DB): <b>{2}</b><br>"
+                        "Your Entry (Done + Ongoing): <b>{3}</b><br>"
+                        "Remaining Allowed: <b>{4}</b><br><br>"
+                        "Please adjust your entry before saving."
+                    ).format(
+                        row.color,
+                        allowed_qty,
+                        done,
+                        current_entry,
+                        remaining
+                    ),
+                    title=_("Quantity Exceeded")
                 )
 
+    # =========================================================
+    # PROCESS VALIDATION
+    # =========================================================
     def validate_process_quantities(self):
+
         bill_qty = self.bill_quantity or 0
-        process_qty_map = {}
+        process_map = {}
 
         for d in self.daily_production_details:
             if d.process_name:
-                process_qty_map[d.process_name] = process_qty_map.get(d.process_name, 0) + (d.quantity or 0)
+                process_map[d.process_name] = process_map.get(d.process_name, 0) + (d.quantity or 0)
 
-        for process_name, total in process_qty_map.items():
-            if total > bill_qty:
+        for process, qty in process_map.items():
+            if qty > bill_qty:
                 frappe.throw(
-                    f"Total quantity for Process <b>{process_name}</b> "
-                    f"({total}) cannot exceed Bill Quantity ({bill_qty})."
+                    f"Process <b>{process}</b> exceeds Bill Quantity"
                 )
 
-# ================= DONE QUANTITY API =================
+    # =========================================================
+    # AMOUNT CALCULATION
+    # =========================================================
+    def total_rows_amount(self):
+
+        total = 0
+
+        for row in self.daily_production_details:
+            row.amount = ((row.quantity or 0) * (row.rate or 0)) / 12.0
+            total += row.amount or 0
+
+        self.total_amount = total
+    
+    def sync_latest_done_quantity(self):
+
+        for row in self.daily_production_colors:
+
+            latest = frappe.db.sql("""
+                SELECT
+                    COALESCE(
+                        MAX(
+                            IFNULL(dpc.done_quantity, 0)
+                            + IFNULL(dpc.ongoing_quantity, 0)
+                        ),
+                        0
+                    )
+
+                FROM `tabDaily Production Colors` dpc
+                INNER JOIN `tabDaily Production` dp
+                    ON dp.name = dpc.parent
+
+                WHERE
+                    dp.po = %s
+                    AND dp.process_type = %s
+                    AND dpc.color = %s
+                    AND dp.docstatus != 2
+                    AND dp.name != %s
+
+            """, (
+                self.po,
+                self.process_type,
+                row.color,
+                self.name
+            ))[0][0] or 0
+
+            current = row.done_quantity or 0
+
+            # =====================================================
+            # 🔥 YOUR CONDITION (IMPORTANT CHANGE)
+            # =====================================================
+            if latest > current:
+                row.done_quantity = latest
+
+# =========================================================
+# ⭐ API: GET MAX (done + ongoing)
+# =========================================================
 @frappe.whitelist()
-def get_done_quantity(po, color, process_type):
-    """
-    Returns MAX of done_quantity + ongoing_quantity
-    across all Daily Production entries for given PO + color + process_type.
-    """
+def get_done_quantity(po, color, process_type, current_doc=None):
 
     if not (po and color and process_type):
         return 0
 
-    # 🔹 Get all Daily Production docs for this PO + process_type
-    production_names = frappe.get_all(
-        "Daily Production",
-        filters={
-            "po": po,
-            "process_type": process_type,
-            "is_revised": 0
-        },
-        pluck="name"
-    )
+    max_value = frappe.db.sql("""
+        SELECT
+            COALESCE(
+                MAX(
+                    IFNULL(dpc.done_quantity, 0)
+                    + IFNULL(dpc.ongoing_quantity, 0)
+                ),
+                0
+            )
 
-    if not production_names:
-        return 0
+        FROM `tabDaily Production Colors` dpc
+        INNER JOIN `tabDaily Production` dp
+            ON dp.name = dpc.parent
 
-    # 🔹 Get all matching child rows
-    rows = frappe.get_all(
-        "Daily Production Colors",
-        filters={
-            "parent": ["in", production_names],
-            "parenttype": "Daily Production",
-            "color": color
-        },
-        fields=["done_quantity", "ongoing_quantity"]
-    )
+        WHERE
+            dp.po = %s
+            AND dp.process_type = %s
+            AND dpc.color = %s
+            AND dp.docstatus != 2
+            AND (%s IS NULL OR dp.name != %s)
 
-    # 🔹 Calculate max sum
-    max_sum = 0
-    for r in rows:
-        total = (r.done_quantity or 0) + (r.ongoing_quantity or 0)
-        if total > max_sum:
-            max_sum = total
+    """, (po, process_type, color, current_doc, current_doc))[0][0] or 0
 
-    return max_sum
+    return max_value
