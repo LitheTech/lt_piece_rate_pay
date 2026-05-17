@@ -1,6 +1,7 @@
 import frappe
 from frappe import _
 from frappe.model.document import Document
+from frappe.utils import ceil
 
 
 class DailyProduction(Document):
@@ -13,7 +14,8 @@ class DailyProduction(Document):
         self.sync_latest_done_quantity()
 
         self.set_totals_from_colors()
-        self.validate_color_quantities()
+        if self.is_revised !=1:
+            self.validate_color_quantities()
         self.validate_process_quantities()
         self.total_rows_amount()
 
@@ -39,18 +41,6 @@ class DailyProduction(Document):
     # COLOR VALIDATION (row-level only)
     # =========================================================
     def validate_color_quantities(self):
-
-        # for row in self.daily_production_colors:
-
-        #     if (row.done_quantity or 0) + (row.ongoing_quantity or 0) > (row.color_quantity or 0):
-
-        #         frappe.throw(
-        #             _(
-        #                 "For Color <b>{0}</b>: Done + Ongoing exceeds allowed quantity"
-        #             ).format(row.color),
-        #             title=_("Quantity Exceeded")
-        #         )
-        #         def validate_color_quantities(self):
 
         for row in self.daily_production_colors:
 
@@ -107,7 +97,7 @@ class DailyProduction(Document):
         total = 0
 
         for row in self.daily_production_details:
-            row.amount = ((row.quantity or 0) * (row.rate or 0)) / 12.0
+            row.amount = ceil(((row.quantity or 0) * (row.rate or 0)) / 12.0)
             total += row.amount or 0
 
         self.total_amount = total
@@ -134,7 +124,7 @@ class DailyProduction(Document):
                     dp.po = %s
                     AND dp.process_type = %s
                     AND dpc.color = %s
-                    AND dp.docstatus != 2
+                    AND dp.is_revised != 1
                     AND dp.name != %s
 
             """, (
@@ -179,7 +169,7 @@ def get_done_quantity(po, color, process_type, current_doc=None):
             dp.po = %s
             AND dp.process_type = %s
             AND dpc.color = %s
-            AND dp.docstatus != 2
+            AND dp.is_revised != 1
             AND (%s IS NULL OR dp.name != %s)
 
     """, (po, process_type, color, current_doc, current_doc))[0][0] or 0

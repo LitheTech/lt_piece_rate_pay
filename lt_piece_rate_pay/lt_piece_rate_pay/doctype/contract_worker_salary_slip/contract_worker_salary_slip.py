@@ -2,7 +2,7 @@
 # For license information, please see license.txt
 
 import frappe
-from frappe.utils import flt
+from frappe.utils import flt,ceil
 from frappe.model.document import Document
 from frappe import _
 
@@ -59,7 +59,7 @@ class ContractWorkerSalarySlip(Document):
         total=0
         all_pieces = 0
         for row in self.activities:
-            row.amount = row.rate * row.quantitydz
+            row.amount = ceil(row.rate * row.quantitydz)
             total += row.amount
             all_pieces += row.quantity
         self.total_amount = total
