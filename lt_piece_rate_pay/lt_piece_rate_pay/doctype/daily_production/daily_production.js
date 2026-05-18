@@ -180,6 +180,7 @@ function update_done_quantity(frm, cdt, cdn) {
         method: "lt_piece_rate_pay.lt_piece_rate_pay.doctype.daily_production.daily_production.get_done_quantity",
         args: {
             po: frm.doc.po,
+            style:row.style,
             color: row.color,
             process_type: frm.doc.process_type,
             current_doc: frm.doc.name || null

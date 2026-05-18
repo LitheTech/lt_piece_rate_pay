@@ -123,6 +123,7 @@ class DailyProduction(Document):
                 WHERE
                     dp.po = %s
                     AND dp.process_type = %s
+                    AND dpc.style = %s
                     AND dpc.color = %s
                     AND dp.is_revised != 1
                     AND dp.name != %s
@@ -130,6 +131,7 @@ class DailyProduction(Document):
             """, (
                 self.po,
                 self.process_type,
+                row.style,
                 row.color,
                 self.name
             ))[0][0] or 0
@@ -146,9 +148,9 @@ class DailyProduction(Document):
 # ⭐ API: GET MAX (done + ongoing)
 # =========================================================
 @frappe.whitelist()
-def get_done_quantity(po, color, process_type, current_doc=None):
+def get_done_quantity(po, style, color, process_type, current_doc=None):
 
-    if not (po and color and process_type):
+    if not (po and style and color and process_type):
         return 0
 
     max_value = frappe.db.sql("""
@@ -168,10 +170,11 @@ def get_done_quantity(po, color, process_type, current_doc=None):
         WHERE
             dp.po = %s
             AND dp.process_type = %s
+            AND dpc.style = %s
             AND dpc.color = %s
             AND dp.is_revised != 1
             AND (%s IS NULL OR dp.name != %s)
 
-    """, (po, process_type, color, current_doc, current_doc))[0][0] or 0
+    """, (po, process_type, style, color, current_doc, current_doc))[0][0] or 0
 
     return max_value
