@@ -24,6 +24,7 @@ class ContractWorkerSalarySlip(Document):
                 dpd.process_name,
                 dpd.rate,
                 SUM(dpd.quantity) AS quantity,
+                SUM(dpd.amount) AS amount,
                 dp.production_date,
                 dp.buyer,
                 dp.po,
@@ -48,6 +49,7 @@ class ContractWorkerSalarySlip(Document):
 					"rate": row.rate,
 					"quantity": row.quantity,
                     "quantitydz": row.quantity/12,
+                    "amount":row.amount,
 					"buyer": row.buyer,
 					"production_date": row.production_date,
                     "po":row.po,
@@ -59,8 +61,8 @@ class ContractWorkerSalarySlip(Document):
         total=0
         all_pieces = 0
         for row in self.activities:
-            row.amount = ceil(row.rate * row.quantitydz)
-            total += row.amount
+            # row.amount = ceil(row.rate * row.quantitydz)
+            total += row.amount or 0
             all_pieces += row.quantity
         self.total_amount = total
         self.total_pieces= all_pieces

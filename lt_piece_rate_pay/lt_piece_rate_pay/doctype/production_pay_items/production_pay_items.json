@@ -15,7 +15,8 @@
   "po",
   "process_type",
   "floor",
-  "line"
+  "line",
+  "amount"
  ],
  "fields": [
   {
@@ -69,12 +70,17 @@
    "fieldname": "line",
    "fieldtype": "Data",
    "label": "Line"
+  },
+  {
+   "fieldname": "amount",
+   "fieldtype": "Data",
+   "label": "Amount"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-04-28 15:36:53.915243",
+ "modified": "2026-05-19 13:48:19.742272",
  "modified_by": "Administrator",
  "module": "Lt Piece Rate Pay",
  "name": "Production Pay Items",
