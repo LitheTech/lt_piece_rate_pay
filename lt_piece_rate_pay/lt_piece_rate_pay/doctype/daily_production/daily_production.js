@@ -106,6 +106,16 @@ frappe.ui.form.on("Daily Production Colors", {
     }
 });
 
+// ================= DETAILS CHILD TABLE =================
+frappe.ui.form.on("Daily Production Details", {
+    quantity: function(frm, cdt, cdn) {
+        validate_child_quantity(frm, cdn);
+    },
+    process_name: function(frm, cdt, cdn) {
+        validate_child_quantity(frm, cdn);
+    }
+});
+
 
 // ================= HELPERS =================
 
@@ -199,4 +209,40 @@ function reset_all(frm) {
 
     frm.clear_table("daily_production_colors");
     frm.refresh_field("daily_production_colors");
+}
+
+// 🔹 VALIDATE DETAILS QUANTITY AGAINST BILL QUANTITY
+function validate_child_quantity(frm, row_name) {
+    let bill_qty = frm.doc.bill_quantity || 0;
+    
+    // 1. Calculate the total quantity for each process currently in the child table
+    let process_totals = {};
+    
+    (frm.doc.daily_production_details || []).forEach(row => {
+        if (row.process_name) {
+            process_totals[row.process_name] = (process_totals[row.process_name] || 0) + (row.quantity || 0);
+        }
+    });
+
+    // 2. Find the process name of the row that was just modified
+    let changed_row = frappe.get_doc("Daily Production Details", row_name);
+    if (!changed_row || !changed_row.process_name) return;
+
+    let total_for_this_process = process_totals[changed_row.process_name] || 0;
+
+    // 3. Throw an alert if it exceeds bill quantity
+    if (total_for_this_process > bill_qty) {
+        
+        // Reset the value back to 0 or reduce it to prevent sticking invalid data
+        frappe.model.set_value(changed_row.doctype, changed_row.name, "quantity", 0);
+        
+        frappe.msgprint({
+            title: __('Quantity Exceeded'),
+            indicator: 'orange',
+            message: __(
+                "⚠️ Process <b>{0}</b> total quantity (<b>{1}</b>) cannot exceed the Bill Quantity (<b>{2}</b>).<br>The field has been reset.", 
+                [changed_row.process_name, total_for_this_process, bill_qty]
+            )
+        });
+    }
 }

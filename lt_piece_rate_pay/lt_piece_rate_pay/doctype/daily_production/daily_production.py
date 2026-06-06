@@ -80,9 +80,12 @@ class DailyProduction(Document):
         process_map = {}
 
         for d in self.daily_production_details:
-            if d.process_name:
-                process_map[d.process_name] = process_map.get(d.process_name, 0) + (d.quantity or 0)
-
+            if self.has_sub_process==1:
+                if d.process_name:
+                    process_map[d.process_name] = process_map.get(d.process_name, 0) + (d.quantity or 0)
+            else:
+                key = self.process_type or "Main Process"
+                process_map[key] = process_map.get(key, 0) + (d.quantity or 0)
         for process, qty in process_map.items():
             if qty > bill_qty:
                 frappe.throw(
