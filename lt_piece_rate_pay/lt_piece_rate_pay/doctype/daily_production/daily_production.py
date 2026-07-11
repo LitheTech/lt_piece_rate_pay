@@ -10,12 +10,12 @@ class DailyProduction(Document):
     # MAIN VALIDATE
     # =========================================================
     def validate(self):
+        if not self.need_update:
+            self.sync_latest_done_quantity()
 
-        self.sync_latest_done_quantity()
-
-        self.set_totals_from_colors()
-        if self.is_revised !=1:
-            self.validate_color_quantities()
+            self.set_totals_from_colors()
+            if self.is_revised !=1:
+                self.validate_color_quantities()
         self.validate_process_quantities()
         self.total_rows_amount()
 

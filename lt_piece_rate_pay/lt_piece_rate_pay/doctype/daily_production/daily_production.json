@@ -19,6 +19,7 @@
   "is_revised",
   "floor",
   "facility_or_line",
+  "need_update",
   "section_break_22",
   "daily_production_colors",
   "section_break_8",
@@ -104,8 +105,10 @@
   {
    "fieldname": "process_type",
    "fieldtype": "Link",
+   "in_list_view": 1,
    "label": " Process Type",
-   "options": "Process Type"
+   "options": "Process Type",
+   "reqd": 1
   },
   {
    "default": "0",
@@ -118,14 +121,18 @@
   {
    "fieldname": "floor",
    "fieldtype": "Link",
+   "in_list_view": 1,
    "label": "Floor",
-   "options": "Floor"
+   "options": "Floor",
+   "reqd": 1
   },
   {
    "fieldname": "facility_or_line",
    "fieldtype": "Link",
+   "in_list_view": 1,
    "label": " Facility or Line",
-   "options": "Facility or Line"
+   "options": "Facility or Line",
+   "reqd": 1
   },
   {
    "default": "0",
@@ -163,11 +170,17 @@
   {
    "fieldname": "section_break_23",
    "fieldtype": "Section Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "need_update",
+   "fieldtype": "Check",
+   "label": "Need Update"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-04-27 16:50:02.215943",
+ "modified": "2026-07-11 13:11:43.422326",
  "modified_by": "Administrator",
  "module": "Lt Piece Rate Pay",
  "name": "Daily Production",

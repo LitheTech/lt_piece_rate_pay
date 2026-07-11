@@ -58,6 +58,15 @@ frappe.ui.form.on("Daily Production", {
                 };
             };
 
+        frm.fields_dict["daily_production_details"].grid
+            .get_field("employee").get_query = function() {
+                return {
+                    filters: {
+                        status: "Active"
+                    }
+                };
+            };
+
         // 🔥 VALIDATION LISTENER
         if (!frm._qty_listener_attached) {
             frm._qty_listener_attached = true;
