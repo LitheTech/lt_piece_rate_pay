@@ -6,6 +6,35 @@ from frappe.utils import ceil
 
 class DailyProduction(Document):
 
+    def before_insert(self):
+        # Force new amendments to always start in 'Draft' state
+        if self.amended_from or self.is_new():
+            self.workflow_state = "Draft"
+
+    def on_update(self):
+        # Triggers on every save/update
+        self.handle_parent_rejection_on_approval()
+
+    # =========================================================
+    # REJECT PARENT DOCUMENT ONLY WHEN NEW DOC IS APPROVED
+    # =========================================================
+    def handle_parent_rejection_on_approval(self):
+        """
+        While this doc is 'Draft', nothing happens to parent doc.
+        When this doc becomes 'Approved', parent doc becomes 'Rejected'.
+        """
+        if self.workflow_state == "Approved" and self.amended_from:
+            parent_state = frappe.db.get_value("Daily Production", self.amended_from, "workflow_state")
+            
+            # Change parent document state to 'Rejected'
+            if parent_state != "Rejected":
+                frappe.db.set_value("Daily Production", self.amended_from, "workflow_state", "Rejected")
+                frappe.msgprint(
+                    _("Previous document <b>{0}</b> has been marked as <b>Rejected</b>.").format(self.amended_from),
+                    alert=True
+                )
+
+
     # =========================================================
     # MAIN VALIDATE
     # =========================================================
@@ -97,15 +126,58 @@ class DailyProduction(Document):
     # =========================================================
     def total_rows_amount(self):
 
+        salary=0 
+        contract=0
         total = 0
 
         for row in self.daily_production_details:
             row.amount = ceil(((row.quantity or 0) * (row.rate or 0)) / 12.0)
+            if row.employee_type== "Contract":
+                contract +=row.amount or 0
+            elif row.employee_type== "Salary":
+                salary +=row.amount or 0
             total += row.amount or 0
 
+        self.contract_amount=contract
+        self.salary_amount=salary
         self.total_amount = total
     
     def sync_latest_done_quantity(self):
+        doc_before_save = self.get_doc_before_save()
+        # -----------------------------------------------------
+        # 1. APPROVAL TRANSITION (Draft -> Approved):
+        #    Do NOT recalculate. Just freeze what was in Draft.
+        # -----------------------------------------------------
+        if doc_before_save and doc_before_save.workflow_state == "Draft" and self.workflow_state == "Approved":
+            prev_colors = {(d.style, d.color): d.done_quantity for d in doc_before_save.daily_production_colors}
+
+            for row in self.daily_production_colors:
+                key = (row.style, row.color)
+                if key in prev_colors and prev_colors[key] is not None:
+                    row.done_quantity = prev_colors[key]
+            return
+
+        # -----------------------------------------------------
+        # 2. AMENDMENT (First Save):
+        #    Copy exact done_quantity from the parent document
+        # -----------------------------------------------------
+        if self.amended_from and (self.is_new() or self.workflow_state == "Draft"):
+
+            parent_colors = frappe.db.get_all(
+                "Daily Production Colors",
+                filters={"parent": self.amended_from},
+                fields=["style", "color", "done_quantity"]
+            )
+            parent_map = {(d.style, d.color): d.done_quantity for d in parent_colors}
+
+            for row in self.daily_production_colors:
+                key = (row.style, row.color)
+                if key in parent_map:
+                    row.done_quantity = parent_map[key] or 0
+            return
+
+        # Extract base document name (e.g. 'DP-2026-0035' from 'DP-2026-0035-6')
+        root_name = self.name.split('-')[0] + '-' + self.name.split('-')[1] + '-' + self.name.split('-')[2] if self.name and len(self.name.split('-')) >= 3 else self.name
 
         for row in self.daily_production_colors:
 
@@ -128,15 +200,18 @@ class DailyProduction(Document):
                     AND dp.process_type = %s
                     AND dpc.style = %s
                     AND dpc.color = %s
+                    AND dp.workflow_state IN ('Approved', 'Draft')
                     AND dp.is_revised != 1
                     AND dp.name != %s
-
+                    AND (%s IS NULL OR dp.name NOT LIKE %s)
             """, (
                 self.po,
                 self.process_type,
                 row.style,
                 row.color,
-                self.name
+                self.name,
+                root_name,
+                f"{root_name}%"
             ))[0][0] or 0
 
             current = row.done_quantity or 0

@@ -37,6 +37,7 @@ class ContractWorkerSalarySlip(Document):
                 `tabDaily Production` dp ON dp.name = dpd.parent
             WHERE
                 dpd.employee = %s
+                AND dp.workflow_state ='Approved'
                 AND dp.production_date BETWEEN %s AND %s
             GROUP BY
                 dpd.process_name, dp.po,dp.facility_or_line

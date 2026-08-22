@@ -53,8 +53,8 @@ frappe.ui.form.on("Daily Production", {
             .get_field("process_name").get_query = function() {
                 return {
                     filters: {
-                        parent_process: frm.doc.process_type || ""
-                    }
+                        parent_process: frm.doc.process_type || "",
+                        default_rate: [">", 0]                    }
                 };
             };
 

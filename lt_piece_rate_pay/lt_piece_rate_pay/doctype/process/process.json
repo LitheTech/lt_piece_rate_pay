@@ -9,6 +9,7 @@
  "field_order": [
   "process_name",
   "parent_process",
+  "new_rate",
   "default_rate",
   "company"
  ],
@@ -28,18 +29,24 @@
   {
    "fieldname": "default_rate",
    "fieldtype": "Float",
-   "label": "Default Rate"
+   "label": "Default Rate",
+   "read_only": 1
   },
   {
    "fieldname": "company",
    "fieldtype": "Link",
    "label": "Company",
    "options": "Company"
+  },
+  {
+   "fieldname": "new_rate",
+   "fieldtype": "Float",
+   "label": "New Rate"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-07-28 13:03:53.015401",
+ "modified": "2026-08-15 15:14:18.047354",
  "modified_by": "Administrator",
  "module": "Lt Piece Rate Pay",
  "name": "Process",
@@ -54,6 +61,29 @@
    "read": 1,
    "report": 1,
    "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "HR Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "HR User",
    "share": 1,
    "write": 1
   }

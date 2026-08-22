@@ -31,7 +31,12 @@
   "section_break_23",
   "daily_production_details",
   "section_break_20",
-  "total_amount"
+  "contract_amount",
+  "column_break_26",
+  "salary_amount",
+  "column_break_28",
+  "total_amount",
+  "amended_from"
  ],
  "fields": [
   {
@@ -176,11 +181,38 @@
    "fieldname": "need_update",
    "fieldtype": "Check",
    "label": "Need Update"
+  },
+  {
+   "fieldname": "salary_amount",
+   "fieldtype": "Float",
+   "label": "Salary Amount"
+  },
+  {
+   "fieldname": "contract_amount",
+   "fieldtype": "Float",
+   "label": "Contract Amount"
+  },
+  {
+   "fieldname": "column_break_26",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_28",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Daily Production",
+   "print_hide": 1,
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-07-11 13:11:43.422326",
+ "modified": "2026-08-15 15:15:26.206027",
  "modified_by": "Administrator",
  "module": "Lt Piece Rate Pay",
  "name": "Daily Production",
@@ -195,6 +227,29 @@
    "read": 1,
    "report": 1,
    "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "HR Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "HR User",
    "share": 1,
    "write": 1
   }

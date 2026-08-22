@@ -288,7 +288,7 @@
  "icon": "fa fa-cog",
  "is_submittable": 1,
  "links": [],
- "modified": "2025-07-28 13:13:13.665924",
+ "modified": "2026-08-15 15:16:24.495319",
  "modified_by": "Administrator",
  "module": "Lt Piece Rate Pay",
  "name": "Contract Worker Payroll Entry",
@@ -301,6 +301,18 @@
    "read": 1,
    "report": 1,
    "role": "HR Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "HR User",
    "share": 1,
    "submit": 1,
    "write": 1

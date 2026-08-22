@@ -64,13 +64,14 @@
    "fetch_from": "employee.employment_type",
    "fieldname": "employee_type",
    "fieldtype": "Data",
-   "label": "Employee Type"
+   "label": "Employee Type",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-05-04 12:49:03.025651",
+ "modified": "2026-07-26 17:41:34.658770",
  "modified_by": "Administrator",
  "module": "Lt Piece Rate Pay",
  "name": "Daily Production Details",

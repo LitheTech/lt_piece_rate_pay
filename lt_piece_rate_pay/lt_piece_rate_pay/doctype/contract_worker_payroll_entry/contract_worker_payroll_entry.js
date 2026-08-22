@@ -52,11 +52,7 @@ frappe.ui.form.on('Contract Worker Payroll Entry', {
             if ((frm.doc.employees || []).length && !frappe.model.has_workflow(frm.doctype)) {
                 frm.page.clear_primary_action();
                 frm.page.set_primary_action(__('Create Contract Worker Salary Slips'), () => {
-                    frm.save('Submit').then(() => {
-                        frm.page.clear_primary_action();
-                        frm.refresh();
-                        frm.events.refresh(frm);
-                    });
+                    frm.events.create_contract_worker_salary_slips(frm);
                 });
             }
         }
@@ -84,12 +80,51 @@ frappe.ui.form.on('Contract Worker Payroll Entry', {
     },
 
     create_contract_worker_salary_slips: function (frm) {
-        frm.call({
-            doc: frm.doc,
-            method: "create_contract_worker_salary_slips",
-            callback: function () {
-                frm.refresh();
-                frm.toolbar.refresh();
+        if (!frm.doc.start_date || !frm.doc.end_date) {
+            frappe.msgprint(__('Please select Start Date and End Date first.'));
+            return;
+        }
+
+        const execute_submit = () => {
+            frm.save('Submit').then(() => {
+                frm.page.clear_primary_action();
+
+                // Triggers backend Python method to create the actual salary slips
+                frm.call({
+                    doc: frm.doc,
+                    method: "create_contract_worker_salary_slips",
+                    freeze: true,
+                    freeze_message: __('Creating Salary Slips...'),
+                    callback: function () {
+                        frm.refresh();
+                        frm.events.refresh(frm);
+                    }
+                });
+            });
+        };
+
+        // Fetch draft Daily Production records in date range
+        frappe.db.get_list('Daily Production', {
+            filters: {
+                workflow_state: 'Draft',
+                docstatus: 0,
+                production_date: ['between', [frm.doc.start_date, frm.doc.end_date]]
+            },
+            pluck: 'name'
+        }).then(drafts => {
+
+            const run_process = () => {
+                execute_submit();
+            };
+
+            // Prompt user if draft records exist
+            if (drafts && drafts.length > 0) {
+                frappe.confirm(
+                    __('Draft Daily Production document(s) found in this range:<br><br><b>{0}</b><br><br>Do you want to continue without them?', [drafts.join(', ')]),
+                    run_process
+                );
+            } else {
+                run_process();
             }
         });
     },
@@ -335,24 +370,56 @@ const submit_salary_slip = function (frm) {
 };
 
 const salary_slip_reprocess = function (frm) {
-	frappe.confirm(__('This will reprocess Salary Slips'),
-		function () {
-			frappe.call({
-				method: 'reprocess_salary_slips',
-				args: {},
-				callback: function () {
-					frm.events.refresh(frm);
-				},
-				doc: frm.doc,
-				freeze: true,
-				freeze_message: __('Reprocessing Salary Slips ')
-			});
-		},
-		function () {
-			if (frappe.dom.freeze_count) {
-				frappe.dom.unfreeze();
-				frm.events.refresh(frm);
-			}
-		}
-	);
+    if (!frm.doc.start_date || !frm.doc.end_date) {
+        frappe.msgprint(__('Please select Start Date and End Date first.'));
+        return;
+    }
+
+    // 1. Fetch draft Daily Production records within the date range
+    frappe.db.get_list('Daily Production', {
+        filters: [
+            ['docstatus', '=', 0],
+            ['production_date', 'between', [frm.doc.start_date, frm.doc.end_date]]
+        ],
+        fields: ['name', 'workflow_state']
+    }).then(records => {
+        let drafts = records
+            .filter(d => !d.workflow_state || d.workflow_state === 'Draft')
+            .map(d => d.name);
+
+        // 2. Build dialog message
+        let message = __('This will reprocess Salary Slips.');
+
+        if (drafts && drafts.length > 0) {
+            message += '<br><br>' + __('<b>Draft Daily Production document(s) found in this range:</b><br>{0}', [drafts.join(', ')]);
+            message += '<br><br>' + __('Do you want to continue without them?');
+        } else {
+            message += ' ' + __('Do you want to proceed?');
+        }
+
+        // 3. Show single confirm dialog with draft details appended
+        frappe.confirm(
+            message,
+            function () {
+                frappe.call({
+                    method: 'reprocess_salary_slips',
+                    args: {
+                        ignore_drafts: drafts.length > 0 ? 1 : 0
+                    },
+                    callback: function () {
+                        frm.events.refresh(frm);
+                    },
+                    doc: frm.doc,
+                    freeze: true,
+                    freeze_message: __('Reprocessing Salary Slips...')
+                });
+            },
+            function () {
+                if (frappe.dom.freeze_count) {
+                    frappe.dom.unfreeze();
+                    frm.events.refresh(frm);
+                }
+            }
+        );
+    });
 };

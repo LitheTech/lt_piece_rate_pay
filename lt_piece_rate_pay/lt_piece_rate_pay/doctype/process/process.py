@@ -5,4 +5,9 @@
 from frappe.model.document import Document
 
 class Process(Document):
-	pass
+	def validate(self):
+        # Update default_rate whenever the state becomes Approved/Accepted
+		if self.workflow_state in ["Approved", "Accepted"] and self.new_rate:
+			self.default_rate = self.new_rate
+
+

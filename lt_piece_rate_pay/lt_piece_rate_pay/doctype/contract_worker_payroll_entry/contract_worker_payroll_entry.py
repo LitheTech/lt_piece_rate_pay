@@ -83,6 +83,19 @@ class ContractWorkerPayrollEntry(Document):
 			)
 
 	def on_cancel(self):
+		frappe.enqueue_doc(
+            self.doctype,
+            self.name,
+            method="delete_salary_slips",
+            queue="long",
+            timeout=3000
+        )
+		frappe.msgprint(
+            _("Salary slips deletion has been queued in the background."), 
+            alert=True
+        )
+
+	def delete_salary_slips(self):
 		salary_slips = frappe.db.sql_list(
 			"""
 			SELECT name FROM `tabContract Worker Salary Slip`
