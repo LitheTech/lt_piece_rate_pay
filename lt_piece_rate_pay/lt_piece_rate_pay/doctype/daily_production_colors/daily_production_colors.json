@@ -22,12 +22,14 @@
   {
    "fieldname": "color_quantity",
    "fieldtype": "Int",
-   "label": "Color Quantity"
+   "label": "Color Quantity",
+   "read_only": 1
   },
   {
    "fieldname": "done_quantity",
    "fieldtype": "Int",
-   "label": "Done Quantity"
+   "label": "Done Quantity",
+   "read_only": 1
   },
   {
    "fieldname": "ongoing_quantity",
@@ -46,7 +48,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-07-11 23:14:01.419137",
+ "modified": "2026-08-29 13:12:58.660571",
  "modified_by": "Administrator",
  "module": "Lt Piece Rate Pay",
  "name": "Daily Production Colors",
