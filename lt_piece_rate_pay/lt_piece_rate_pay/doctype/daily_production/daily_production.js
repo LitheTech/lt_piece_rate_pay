@@ -267,8 +267,11 @@ function validate_process_hierarchy_js(frm, cdt, cdn) {
 
     if (!frm.doc.po || !frm.doc.process_type || !row.style || !row.color) return;
 
+    // 🔥 Convert process_type to lowercase for site-agnostic comparison
+    let process_type_lower = (frm.doc.process_type || "").trim().toLowerCase();
+
     // Hierarchy only enforces limits on Sewing and Iron
-    if (!["Sewing", "Iron"].includes(frm.doc.process_type)) return;
+    if (!["sewing", "iron"].includes(process_type_lower)) return;
 
     frappe.call({
         method: "lt_piece_rate_pay.lt_piece_rate_pay.doctype.daily_production.daily_production.check_process_hierarchy",

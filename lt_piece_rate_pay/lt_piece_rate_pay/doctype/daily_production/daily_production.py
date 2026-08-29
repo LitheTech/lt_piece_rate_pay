@@ -262,11 +262,14 @@ def get_done_quantity(po, style, color, process_type, current_doc=None):
 def check_process_hierarchy(po, style, color, process_type, current_qty=0, current_doc=None):
     """API endpoint to validate hierarchy on client side and display message with frappe.msgprint."""
     current_qty = float(current_qty or 0)
+
+    # Normalize input process_type to lowercase (e.g. 'CUTTING' or 'Cutting' -> 'cutting')
+    proc_key = str(process_type or "").strip().lower()
     
-    # Query cumulative totals from existing documents
+    # Query cumulative totals from existing documents with lowercased process_key alias
     results = frappe.db.sql("""
         SELECT
-            dp.process_type,
+            LOWER(TRIM(dp.process_type)) as process_key,
             COALESCE(MAX(IFNULL(dpc.done_quantity, 0) + IFNULL(dpc.ongoing_quantity, 0)), 0) as total_qty
         FROM `tabDaily Production Colors` dpc
         INNER JOIN `tabDaily Production` dp ON dp.name = dpc.parent
@@ -277,22 +280,23 @@ def check_process_hierarchy(po, style, color, process_type, current_qty=0, curre
             AND dp.workflow_state IN ('Approved', 'Draft')
             AND dp.is_revised != 1
             AND (%s IS NULL OR dp.name != %s)
-        GROUP BY dp.process_type
+        GROUP BY LOWER(TRIM(dp.process_type))
     """, (po, style, color, current_doc or "", current_doc or ""), as_dict=True)
 
-    totals = {r.process_type: float(r.total_qty) for r in results}
+    totals = {r.process_key: float(r.total_qty) for r in results if r.get("process_key")}
     
-    # Calculate proposed totals (Existing + Entered Quantity)
-    totals[process_type] = totals.get(process_type, 0) + current_qty
+    # Add proposed quantity to the current process
+    totals[proc_key] = totals.get(proc_key, 0.0) + current_qty
 
-    cutting = totals.get("Cutting", 0.0)
-    sewing = totals.get("Sewing", 0.0)
-    iron = totals.get("Iron", 0.0)
+    # Look up values using lowercase keys
+    cutting = totals.get("cutting", 0.0)
+    sewing = totals.get("sewing", 0.0)
+    iron = totals.get("iron", 0.0)
 
     # ---------------------------------------------------------
     # VALIDATION 1: Sewing > Cutting
     # ---------------------------------------------------------
-    if process_type == "Sewing" and sewing > cutting:
+    if proc_key == "sewing" and sewing > cutting:
         msg = _(
             "❌ <b>Process Hierarchy Violation</b><br><br>"
             "<b>Style:</b> {0} | <b>Color:</b> {1}<br><br>"
@@ -313,12 +317,12 @@ def check_process_hierarchy(po, style, color, process_type, current_qty=0, curre
     # ---------------------------------------------------------
     # VALIDATION 2: Iron > Sewing OR Iron > Cutting
     # ---------------------------------------------------------
-    if process_type == "Iron" and (iron > sewing or iron > cutting):
+    if proc_key == "iron" and (iron > sewing or iron > cutting):
         exceeded_target = "Sewing" if iron > sewing else "Cutting"
         target_qty = sewing if iron > sewing else cutting
 
         msg = _(
-            # "❌ <b>Process Hierarchy Violation</b><br><br>"
+            "❌ <b>Process Hierarchy Violation</b><br><br>"
             "<b>Style:</b> {0} | <b>Color:</b> {1}<br><br>"
             "• <b>Cutting Total:</b> {2}<br>"
             "• <b>Sewing Total:</b> {3}<br>"
