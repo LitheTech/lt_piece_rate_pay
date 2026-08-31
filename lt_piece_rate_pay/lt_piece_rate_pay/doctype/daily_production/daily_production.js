@@ -34,6 +34,14 @@ frappe.ui.form.on("Daily Production", {
     // ================= REFRESH =================
     refresh: function(frm) {
 
+        frm.set_query("po", function() {
+            return {
+                filters: [
+                    ["PO List", "production_complete", "!=", 1]
+                ]
+            };
+        });
+
         if (frm.doc.po) {
             frappe.call({
                 method: "lt_piece_rate_pay.lt_piece_rate_pay.doctype.po_details.po_details.get_styles_for_po",
@@ -263,7 +271,7 @@ function validate_child_quantity(frm, row_name) {
 
 function validate_process_hierarchy_js(frm, cdt, cdn) {
     let row = locals[cdt][cdn];
-    if (frm.doc.is_revised == 1) return;
+    if (frm.doc.is_revised == 1 || frm.doc.skip_hierarchy == 1) return;
 
     if (!frm.doc.po || !frm.doc.process_type || !row.style || !row.color) return;
 

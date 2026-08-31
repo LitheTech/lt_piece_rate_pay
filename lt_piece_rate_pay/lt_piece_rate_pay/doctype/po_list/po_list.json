@@ -10,6 +10,7 @@
   "posting_date",
   "company",
   "order_number",
+  "production_complete",
   "column_break_3",
   "sales_contract",
   "buyer",
@@ -76,11 +77,17 @@
    "fieldname": "filelot",
    "fieldtype": "Data",
    "label": "File/Lot"
+  },
+  {
+   "default": "0",
+   "fieldname": "production_complete",
+   "fieldtype": "Check",
+   "label": "Production Complete"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-05-16 13:20:44.591975",
+ "modified": "2026-09-01 00:56:11.760116",
  "modified_by": "Administrator",
  "module": "Lt Piece Rate Pay",
  "name": "PO List",

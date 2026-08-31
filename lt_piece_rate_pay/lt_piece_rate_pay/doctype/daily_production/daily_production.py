@@ -45,6 +45,8 @@ class DailyProduction(Document):
             self.set_totals_from_colors()
             if self.is_revised !=1:
                 self.validate_color_quantities()
+        if self.is_new() and self.need_update:
+            self.sync_latest_done_quantity()
         self.validate_process_quantities()
         self.total_rows_amount()
 
@@ -251,6 +253,7 @@ def get_done_quantity(po, style, color, process_type, current_doc=None):
             AND dpc.style = %s
             AND dpc.color = %s
             AND dp.is_revised != 1
+            AND dp.workflow_state IN ('Approved', 'Draft')
             AND (%s IS NULL OR dp.name != %s)
 
     """, (po, process_type, style, color, current_doc, current_doc))[0][0] or 0

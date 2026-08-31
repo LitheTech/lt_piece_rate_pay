@@ -12,6 +12,7 @@
   "sales_contract",
   "process_type",
   "has_sub_process",
+  "skip_hierarchy",
   "column_break_4",
   "company",
   "buyer",
@@ -47,12 +48,14 @@
   },
   {
    "fetch_from": "po.buyer",
+   "fetch_if_empty": 1,
    "fieldname": "buyer",
    "fieldtype": "Data",
    "label": "Buyer"
   },
   {
    "fetch_from": "po.order_number",
+   "fetch_if_empty": 1,
    "fieldname": "order",
    "fieldtype": "Data",
    "label": "Order"
@@ -80,6 +83,7 @@
   },
   {
    "fetch_from": "po.sales_contract",
+   "fetch_if_empty": 1,
    "fieldname": "sales_contract",
    "fieldtype": "Data",
    "label": "Sales Contract"
@@ -152,7 +156,8 @@
   {
    "fieldname": "total_amount",
    "fieldtype": "Float",
-   "label": "Total Amount"
+   "label": "Total Amount",
+   "precision": "2"
   },
   {
    "fieldname": "section_break_22",
@@ -185,7 +190,8 @@
   {
    "fieldname": "salary_amount",
    "fieldtype": "Float",
-   "label": "Salary Amount"
+   "label": "Salary Amount",
+   "precision": "2"
   },
   {
    "fieldname": "contract_amount",
@@ -208,11 +214,17 @@
    "options": "Daily Production",
    "print_hide": 1,
    "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "skip_hierarchy",
+   "fieldtype": "Check",
+   "label": "Skip Hierarchy"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-08-15 15:15:26.206027",
+ "modified": "2026-09-01 01:48:10.463832",
  "modified_by": "Administrator",
  "module": "Lt Piece Rate Pay",
  "name": "Daily Production",
