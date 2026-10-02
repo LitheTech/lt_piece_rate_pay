@@ -42,8 +42,8 @@ class DailyProduction(Document):
         if not self.need_update:
             self.sync_latest_done_quantity()
 
-            if self.is_revised !=1:
-                self.validate_color_quantities()
+        if self.is_revised !=1:
+            self.validate_color_quantities()
         self.set_totals_from_colors()
         if self.is_new() and self.need_update:
             self.sync_latest_done_quantity()
@@ -86,13 +86,14 @@ class DailyProduction(Document):
 
                 frappe.throw(
                     _(
-                        "❌ Quantity Exceeded for Color <b>{0}</b><br><br>"
-                        "Allowed Quantity: <b>{1}</b><br>"
-                        "Already Used (Max DB): <b>{2}</b><br>"
-                        "Your Entry (Done + Ongoing): <b>{3}</b><br>"
-                        "Remaining Allowed: <b>{4}</b><br><br>"
+                        "❌ Quantity Exceeded for Style <b>{0}</b>, Color <b>{1}</b><br><br>"
+                        "Allowed Quantity: <b>{2}</b><br>"
+                        "Already Used (Max DB): <b>{3}</b><br>"
+                        "Your Entry (Done + Ongoing): <b>{4}</b><br>"
+                        "Remaining Allowed: <b>{5}</b><br><br>"
                         "Please adjust your entry before saving."
                     ).format(
+                        row.style,
                         row.color,
                         allowed_qty,
                         done,
@@ -282,6 +283,7 @@ def check_process_hierarchy(po, style, color, process_type, current_qty=0, curre
             AND dpc.color = %s
             AND dp.workflow_state IN ('Approved', 'Draft')
             AND dp.is_revised != 1
+            AND IFNULL(dpc.skip_hierarchy, 0) != 1
             AND (%s IS NULL OR dp.name != %s)
         GROUP BY LOWER(TRIM(dp.process_type))
     """, (po, style, color, current_doc or "", current_doc or ""), as_dict=True)

@@ -125,6 +125,11 @@ frappe.ui.form.on("Daily Production Colors", {
     ongoing_quantity: function(frm, cdt, cdn) {
         validate_process_hierarchy_js(frm, cdt, cdn);
     },
+    
+    // Added handler for child table checkbox- 2-10-26
+    skip_hierarchy: function(frm, cdt, cdn) {
+        validate_process_hierarchy_js(frm, cdt, cdn);
+    }
 });
 
 // ================= DETAILS CHILD TABLE =================
@@ -271,7 +276,7 @@ function validate_child_quantity(frm, row_name) {
 
 function validate_process_hierarchy_js(frm, cdt, cdn) {
     let row = locals[cdt][cdn];
-    if (frm.doc.is_revised == 1 || frm.doc.skip_hierarchy == 1) return;
+    if (frm.doc.is_revised == 1 || row.skip_hierarchy == 1) return; // 2-10-26: Skip hierarchy check row wise if checkbox is checked
 
     if (!frm.doc.po || !frm.doc.process_type || !row.style || !row.color) return;
 

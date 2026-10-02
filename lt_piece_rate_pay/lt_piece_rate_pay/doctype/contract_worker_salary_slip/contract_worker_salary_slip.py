@@ -59,17 +59,23 @@ class ContractWorkerSalarySlip(Document):
                     "line": row.facility_or_line
 				})
     def calculate_total_amount(self):
-        total=0
+        total = 0
         all_pieces = 0
+        
+        group_totals = {}
+        
         for row in self.activities:
+            amount = row.amount or 0
             # row.amount = ceil(row.rate * row.quantitydz)
             total += row.amount or 0
             all_pieces += row.quantity
+            
+            key = (row.floor, row.line)
+            group_totals[key] = group_totals.get(key, 0) + amount
         self.total_amount = total
         self.total_pieces= all_pieces
-        self.tax = 10
-        if self.total_amount<1000:
-            self.tax=0
+        
+        self.tax = sum(10 for amt in group_totals.values() if amt > 1000)
 
 		
 		

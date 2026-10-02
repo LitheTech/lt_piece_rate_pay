@@ -6,14 +6,14 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
-  "process_name",
-  "rate",
-  "quantity",
   "employee",
-  "department",
-  "amount",
   "employee_name",
-  "employee_type"
+  "employee_type",
+  "process_name",
+  "quantity",
+  "rate",
+  "amount",
+  "department"
  ],
  "fields": [
   {
@@ -76,7 +76,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-08-31 17:24:53.417001",
+ "modified": "2026-10-02 01:12:39.011425",
  "modified_by": "Administrator",
  "module": "Lt Piece Rate Pay",
  "name": "Daily Production Details",
