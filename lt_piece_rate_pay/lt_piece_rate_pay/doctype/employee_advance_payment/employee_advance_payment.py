@@ -13,6 +13,24 @@ from frappe.model.document import Document
 class EmployeeAdvancePayment(Document):
 	pass
 
+
+@frappe.whitelist()
+def get_total_advance(employee, contract_worker_payroll_entry):
+	"""Encapsulates the database query inside its own domain model."""
+	if not (employee and contract_worker_payroll_entry):
+		return 0.0
+
+	data = frappe.db.sql("""
+		SELECT SUM(amount) AS total_advance
+		FROM `tabEmployee Advance Payment`
+		WHERE employee = %s 
+		AND contract_worker_payroll_entry = %s
+	""", (employee, contract_worker_payroll_entry), as_dict=True)
+	
+	return flt(data[0].total_advance) if data and data[0].total_advance else 0.0
+
+
+
 @frappe.whitelist()
 def create_advance_assignment_for_multiple_employees(employees, data):
 

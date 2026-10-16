@@ -21,6 +21,7 @@
   "order",
   "floor",
   "facility_or_line",
+  "is_subcontracted",
   "section_break_22",
   "daily_production_colors",
   "section_break_8",
@@ -61,7 +62,7 @@
    "label": "Order"
   },
   {
-   "depends_on": "eval:!doc.__islocal",
+   "depends_on": "eval:!doc.__islocal && !doc.is_subcontracted",
    "fieldname": "daily_production_details",
    "fieldtype": "Table",
    "label": "Daily Production Details",
@@ -221,11 +222,17 @@
    "fieldtype": "Check",
    "hidden": 1,
    "label": "Skip Hierarchy"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_subcontracted",
+   "fieldtype": "Check",
+   "label": "Is Subcontracted"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-10-02 01:20:47.442620",
+ "modified": "2026-10-15 16:49:16.844639",
  "modified_by": "Administrator",
  "module": "Lt Piece Rate Pay",
  "name": "Daily Production",

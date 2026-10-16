@@ -48,7 +48,9 @@ class DailyProduction(Document):
         if self.is_new() and self.need_update:
             self.sync_latest_done_quantity()
         self.validate_process_quantities()
-        self.total_rows_amount()
+        self.validate_zero_quantity_details()
+        if self.is_subcontracted!=1:
+            self.total_rows_amount()
 
     # =========================================================
     # TOTAL CALCULATION
@@ -224,6 +226,34 @@ class DailyProduction(Document):
             # =====================================================
             if latest > current:
                 row.done_quantity = latest
+
+
+    
+    def validate_zero_quantity_details(self):
+        """Ensures no row in Daily Production Details has 0 or empty quantity."""
+        invalid_rows = []
+
+        for idx, row in enumerate(self.daily_production_details, start=1):
+            if (row.quantity or 0) <= 0:
+                process = row.process_name or _("Not Selected")
+                employee = row.employee or _("Not Selected")
+                invalid_rows.append((idx, process, employee))
+
+        if invalid_rows:
+            formatted_list = "<br>".join([
+                _("• <b>Row #{0}:</b> Process: <b>{1}</b> | Employee: <b>{2}</b>").format(row_num, proc, emp)
+                for row_num, proc, emp in invalid_rows
+            ])
+
+            frappe.throw(
+                _(
+                    "❌ <b>Zero Quantity Detected</b><br><br>"
+                    "The following rows in <b>Daily Production Details</b> have a quantity of 0:<br><br>"
+                    "{0}<br><br>"
+                    "Please enter a valid quantity greater than 0 before saving."
+                ).format(formatted_list),
+                title=_("Invalid Quantity")
+            )
 
 # =========================================================
 # ⭐ API: GET MAX (done + ongoing)
