@@ -122,14 +122,6 @@ frappe.ui.form.on("Daily Production Colors", {
         update_color_quantity(frm, cdt, cdn);
     },
     
-    ongoing_quantity: function(frm, cdt, cdn) {
-        validate_process_hierarchy_js(frm, cdt, cdn);
-    },
-    
-    // Added handler for child table checkbox- 2-10-26
-    skip_hierarchy: function(frm, cdt, cdn) {
-        validate_process_hierarchy_js(frm, cdt, cdn);
-    }
 });
 
 // ================= DETAILS CHILD TABLE =================
@@ -271,45 +263,4 @@ function validate_child_quantity(frm, row_name) {
             )
         });
     }
-}
-
-
-function validate_process_hierarchy_js(frm, cdt, cdn) {
-    let row = locals[cdt][cdn];
-    if (frm.doc.is_revised == 1 || row.skip_hierarchy == 1) return; // 2-10-26: Skip hierarchy check row wise if checkbox is checked
-
-    if (!frm.doc.po || !frm.doc.process_type || !row.style || !row.color) return;
-
-    // 🔥 Convert process_type to lowercase for site-agnostic comparison
-    let process_type_lower = (frm.doc.process_type || "").trim().toLowerCase();
-
-    // Hierarchy only enforces limits on Sewing and Iron
-    if (!["sewing", "iron"].includes(process_type_lower)) return;
-
-    frappe.call({
-        method: "lt_piece_rate_pay.lt_piece_rate_pay.doctype.daily_production.daily_production.check_process_hierarchy",
-        args: {
-            po: frm.doc.po,
-            style: row.style,
-            color: row.color,
-            process_type: frm.doc.process_type,
-            current_qty: row.ongoing_quantity || 0,
-            current_doc: frm.doc.name || null
-        },
-        callback: function(r) {
-            if (r.message && !r.message.valid) {
-                // Reset value to avoid invalid state
-                frappe.model.set_value(cdt, cdn, "ongoing_quantity", 0);
-                
-                frappe.msgprint({
-                    title: __('Process Hierarchy Violation'),
-                    indicator: 'red',
-                    message: __(
-                        "⚠️ <b>{0}</b><br>The value has been reset to 0.",
-                        [r.message.message]
-                    )
-                });
-            }
-        }
-    });
 }
