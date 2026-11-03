@@ -277,9 +277,10 @@ class DailyProduction(Document):
             if not row.style or not row.color:
                 continue
 
-            current_qty = float(row.ongoing_quantity or 0)
+            # Calculate current document's total quantity (Done + Ongoing)
+            current_qty = float(row.done_quantity or 0) + float(row.ongoing_quantity or 0)
 
-            # Query cumulative totals from existing documents
+            # Query cumulative totals from existing (other) documents using MAX
             results = frappe.db.sql("""
                 SELECT
                     LOWER(TRIM(dp.process_type)) as process_key,
@@ -299,8 +300,8 @@ class DailyProduction(Document):
 
             totals = {r.process_key: float(r.total_qty) for r in results if r.get("process_key")}
             
-            # Add proposed quantity to the current process
-            totals[proc_key] = totals.get(proc_key, 0.0) + current_qty
+            # Use max() instead of addition (+) to compare past documents against the current document
+            totals[proc_key] = max(totals.get(proc_key, 0.0), current_qty)
 
             cutting = totals.get("cutting", 0.0)
             sewing = totals.get("sewing", 0.0)
