@@ -16,7 +16,8 @@
   "process_type",
   "floor",
   "line",
-  "amount"
+  "amount",
+  "dp_no"
  ],
  "fields": [
   {
@@ -75,12 +76,18 @@
    "fieldname": "amount",
    "fieldtype": "Data",
    "label": "Amount"
+  },
+  {
+   "fieldname": "dp_no",
+   "fieldtype": "Link",
+   "label": "Dp No",
+   "options": "Daily Production"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-05-19 13:48:19.742272",
+ "modified": "2026-11-16 14:32:58.507780",
  "modified_by": "Administrator",
  "module": "Lt Piece Rate Pay",
  "name": "Production Pay Items",
